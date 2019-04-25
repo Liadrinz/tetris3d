@@ -1,0 +1,21 @@
+{
+  "dependencies": {
+    "babel": "^6.23.0",
+    "express": "^4.16.4",
+    "node-cmd": "^3.0.0",
+    "three": "^0.103.0",
+    "webpack": "^4.30.0"
+  },
+  "devDependencies": {
+    "webpack-cli": "^3.3.1"
+  },
+  "name": "tetris3d",
+  "version": "1.0.0",
+  "main": "app/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
