@@ -20,6 +20,10 @@ var init = function () {
     light.position.set(0, 100, 0);
     light.lookAt(0, 0, 0);
     light.castShadow = true;
+    light.shadow.camera.left = -10;
+    light.shadow.camera.right = 10;
+    light.shadow.camera.bottom = -10;
+    light.shadow.camera.top = 10;
     scene.add(light);
 
     renderer = new THREE.WebGLRenderer({ antialias: true });

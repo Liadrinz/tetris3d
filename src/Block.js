@@ -26,6 +26,7 @@ export default class Block {
             );
             cube.position.set(x - center[0] + .5, y - center[1] + .5, z - center[2] + .5);
             cube.castShadow = true;
+            cube.receiveShadow = true;
             let border = new THREE.EdgesHelper(cube, 0xc0c0c0);
             border.position.set(x - center[0] + .5, y - center[1] + .5, z - center[2] + .5);
             this.object3d.add(cube);
@@ -62,8 +63,9 @@ export default class Block {
             let cubeX = parseInt(this.object3d.position.x - this.center[0] + position[0] + 0.5);
             let cubeY = parseInt(this.object3d.position.y - this.center[1] + position[1] + 0.5);
             let cubeZ = parseInt(this.object3d.position.z - this.center[2] + position[2] + 0.5);
-            if (cubeY === 0 || board.matrix[cubeX][cubeY - 1][cubeZ])
+            if (cubeY === 0 || board.matrix[cubeX][cubeY - 1][cubeZ]) {
                 return true;
+            }
         }
         return false;
     }
@@ -77,8 +79,7 @@ export default class Block {
             if (!this.state.settled) {
                 this.cachedY += this.state.speed;
                 if (this.cachedY >= 1) {
-                    console.log(board);
-                    if (this.state.readyToSettle) {
+                    if (this.state.readyToSettle && this._collisionY()) {
                         this.state.settled = true;
                         this.state.readyToSettle = false;
                         // update the top of the board
@@ -90,11 +91,14 @@ export default class Block {
                         }
                     } else {
                         this.state.allowRotate = false;
-                        this.object3d.translateY(-1);
-                        this.cachedY = 0;
-
-                        if (this.object3d.position.y === parseInt(this.object3d.position.y) && this._collisionY()) {
+                        if (this._collisionY()) {
                             this.state.readyToSettle = true;
+                        } else {
+                            this.object3d.translateY(-1);
+                            this.cachedY = 0;
+                            if (this._collisionY()) {
+                                this.state.readyToSettle = true;
+                            }
                         }
                         this.state.allowRotate = true;
                     }
@@ -102,11 +106,6 @@ export default class Block {
             } else {
                 if (!this._collisionY()) {
                     this.state.settled = false;
-                }
-            }
-            if (!this.state.readyToSettle) {
-                if (!this._collisionY()) {
-                    this.state.readyToSettle = false;
                 }
             }
         }
