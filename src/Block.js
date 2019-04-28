@@ -42,16 +42,16 @@ export default class Block {
             let cubeY = parseInt(this.object3d.position.y - this.center[1] + position[1] + 0.5);
             let cubeZ = parseInt(this.object3d.position.z - this.center[2] + position[2] + 0.5);
             if (direction === 'left') {
-                if (cubeX <= 0 || board.matrix[cubeX - 1][cubeY][cubeZ])
+                if (cubeX <= 0 || board.matrix[cubeY][cubeX - 1][cubeZ])
                     return true;
             } else if (direction === 'up') {
-                if (cubeZ <= 0 || board.matrix[cubeX][cubeY][cubeZ - 1])
+                if (cubeZ <= 0 || board.matrix[cubeY][cubeX][cubeZ - 1])
                     return true;
             } else if (direction === 'right') {
-                if (cubeX >= 7 || board.matrix[cubeX + 1][cubeY][cubeZ])
+                if (cubeX >= 7 || board.matrix[cubeY][cubeX + 1][cubeZ])
                     return true;
             } else if (direction === 'down') {
-                if (cubeZ >= 7 || board.matrix[cubeX][cubeY][cubeZ + 1])
+                if (cubeZ >= 7 || board.matrix[cubeY][cubeX][cubeZ + 1])
                     return true;
             }
         }
@@ -63,7 +63,7 @@ export default class Block {
             let cubeX = parseInt(this.object3d.position.x - this.center[0] + position[0] + 0.5);
             let cubeY = parseInt(this.object3d.position.y - this.center[1] + position[1] + 0.5);
             let cubeZ = parseInt(this.object3d.position.z - this.center[2] + position[2] + 0.5);
-            if (cubeY === 0 || board.matrix[cubeX][cubeY - 1][cubeZ]) {
+            if (cubeY === 0 || board.matrix[cubeY - 1][cubeX][cubeZ]) {
                 return true;
             }
         }
@@ -82,12 +82,12 @@ export default class Block {
                     if (this.state.readyToSettle && this._collisionY()) {
                         this.state.settled = true;
                         this.state.readyToSettle = false;
-                        // update the top of the board
+                        // update the info of the board
                         for (let position of this.positions) {
                             let cubeX = this.object3d.position.x - this.center[0] + position[0];
                             let cubeY = this.object3d.position.y - this.center[1] + position[1];
                             let cubeZ = this.object3d.position.z - this.center[2] + position[2];
-                            board.matrix[cubeX][cubeY][cubeZ] = 1;
+                            board.matrix[cubeY][cubeX][cubeZ] = 1;
                         }
                     } else {
                         this.state.allowRotate = false;
