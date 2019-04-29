@@ -111,20 +111,17 @@ export function blockControl(currentBox) {
                         intervalEvent();
                         count++;
                         // copy the object to a new one
-                        // TODO: to copy child by child
-                        for (let child of block.object3d) {
-                            let tempObject = new THREE.Object3D();
-                            tempObject.position.setX(child.position.x);
-                            tempObject.position.setY(child.position.y);
-                            tempObject.position.setZ(child.position.z);
-                            let objectCloned = child.clone();
-                            objectCloned.position.setX(objectCloned.position.x - child.position.x);
-                            objectCloned.position.setY(objectCloned.position.y - child.position.y);
-                            objectCloned.position.setZ(objectCloned.position.z - child.position.z);
-                            tempObject.add(objectCloned);
-                            block.object3d.remove(...block.object3d.children);
-                            block.object3d.copy(tempObject);
-                        }
+                        let tempObject = new THREE.Object3D();
+                        tempObject.position.setX(block.object3d.position.x);
+                        tempObject.position.setY(block.object3d.position.y);
+                        tempObject.position.setZ(block.object3d.position.z);
+                        let objectCloned = block.object3d.clone();
+                        objectCloned.position.setX(objectCloned.position.x - block.object3d.position.x);
+                        objectCloned.position.setY(objectCloned.position.y - block.object3d.position.y);
+                        objectCloned.position.setZ(objectCloned.position.z - block.object3d.position.z);
+                        tempObject.add(objectCloned);
+                        block.object3d.remove(...block.object3d.children);
+                        block.object3d.copy(tempObject);
                         if (count === 5) {
                             clearInterval(s);
                         }

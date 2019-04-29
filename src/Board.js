@@ -1,8 +1,13 @@
 import * as THREE from 'three';
 import { scene } from './Root';
+import { currentBox, history, board } from './logic';
 
 export default class Board {
     constructor(history) {
+        this._init(history);
+    }
+
+    _init(history) {
         this.size = {
             x: 8,
             y: 16,
@@ -30,7 +35,11 @@ export default class Board {
         }
     }
 
-    // TODO: swap x, y
+    reset(history) {
+        scene.remove(this.object3d);
+        this._init(history);
+    }
+
     eliminateCheck() {
         for (let j = 0; j < this.size.y; j++) {
             let eliminatable = true;
@@ -43,18 +52,6 @@ export default class Board {
             }
             if (eliminatable) {
                 this.history.eliminate(j);
-            }
-        }
-        for (let j = 0; j < this.size.y; j++) {
-            let eliminatable = true;
-            for (let i = 0; i < this.size.x && eliminatable; i++) {
-                for (let k = 0; k < this.size.z && eliminatable; k++) {
-                    if (this.matrix[j][i][k] === 0) {
-                        eliminatable = false;
-                    }
-                }
-            }
-            if (eliminatable) {
                 this.matrix.splice(j, 1);
                 j--;
                 let pane = [];
@@ -66,6 +63,21 @@ export default class Board {
                     pane.push(subPane);
                 }
                 this.matrix.push(pane);
+            }
+        }
+    }
+
+    dieCheck() {
+        for (let j = 7; j < this.size.y; j++) {
+            for (let i = 0; i < this.size.x; i++) {
+                for (let k = 0; k < this.size.z; k++) {
+                    if (this.matrix[j][i][k] === 1) {
+                        alert('Click to Restart!');
+                        scene.remove(currentBox[0]);
+                        history.reset();
+                        board.reset(history);
+                    }
+                }
             }
         }
     }

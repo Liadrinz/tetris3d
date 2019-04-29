@@ -1,14 +1,16 @@
 import * as THREE from 'three';
 import { scene } from './Root';
 import { board } from './logic';
+import { addScore } from './Score';
 
 export default class Block {
     constructor(positions, center, color, prev = null) {
         this.positions = positions;
-        this.prev = prev;
         this.center = center;
+        this.color = color;
+        this.prev = prev;
         this.state = {
-            speed: 0.01,
+            speed: 0.015,
             shown: false,
             readyToSettle: false,
             settled: false,
@@ -82,6 +84,7 @@ export default class Block {
                     if (this.state.readyToSettle && this._collisionY()) {
                         this.state.settled = true;
                         this.state.readyToSettle = false;
+                        addScore(this.positions.length);
                         // update the info of the board
                         for (let position of this.positions) {
                             let cubeX = this.object3d.position.x - this.center[0] + position[0];

@@ -1,15 +1,37 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Tetris 3D</title>
-        <meta charset="utf-8"/>
-        <style>
-            body {
-                margin: 0;
-                overflow: hidden;
-            }
-        </style>
-    </head>
-    <body></body>
-    <script src="bundle.js"></script>
+
+<head>
+    <title>Tetris 3D</title>
+    <meta charset="utf-8" />
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .score-box {
+            display: inline-block;
+            position: absolute;
+            left: 5%;
+            top: 5%;
+            background: rgba(0, 0, 0, 0);
+            font-size: 30px;
+            color: #ffffff;
+        }
+
+        #score {
+            display: inline-block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="score-box">
+        Score:
+        <div id="score">0</div>
+    </div>
+</body>
+<script src="bundle.js"></script>
+
 </html>
