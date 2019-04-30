@@ -5,13 +5,13 @@ import Block from './Block';
 import History from './History';
 
 function getRandomShape() {
-    let fourStage = {
-        mat: [
-            [0, 0, 0], [1, 0, 0],
-            [0, 1, 0], [0, 0, 1]
-        ],
-        center: [1, 1, 1]
-    };
+    // let fourStage = {
+    //     mat: [
+    //         [0, 0, 0], [1, 0, 0],
+    //         [0, 1, 0], [0, 0, 1]
+    //     ],
+    //     center: [1, 1, 1]
+    // };
     let doubleCube = {
         mat: [
             [0, 0, 0], [1, 0, 0],
@@ -28,23 +28,29 @@ function getRandomShape() {
         ],
         center: [1, 1, 2]
     };
-    let smallLPiece = {
+    let shortPiece = {
+        mat: [
+            [0, 0, 0], [0, 0, 1]
+        ],
+        center: [1, 1, 1]
+    }
+    let LPiece = {
         mat: [
             [0, 0, 0], [0, 0, 1], [1, 0, 0]
         ],
         center: [1, 1, 1]
-    }
+    };
     let unitCube = {
         mat: [
-            [0,0,0]
+            [0, 0, 0]
         ],
-        center: [1,1,1]
-    }
-    let options = [fourStage, doubleCube, longPiece, smallLPiece, unitCube];
+        center: [1, 1, 1]
+    };
+    let options = [doubleCube, longPiece, shortPiece, LPiece, unitCube];
     return options[parseInt(Math.random() * options.length)];
 }
 
-camera.position.set(14, 12, 14);
+camera.position.set(14, 15, 14);
 
 export let history = new History();
 

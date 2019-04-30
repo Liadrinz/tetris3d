@@ -1,20 +1,21 @@
 import * as THREE from 'three';
 import { scene } from './Root';
 import { addScore } from './Score';
-import { currentBox } from './logic';
+import { size } from './config';
 
 export default class History {
     constructor() {
+        this.size = size;
         this._init();
     }
 
     _init() {
-        this._dict = new Array(16);
-        for (let j = 0; j < 16; j++) {
+        this._dict = new Array(this.size.y);
+        for (let j = 0; j < this.size.y; j++) {
             let pane = [];
-            for (let i = 0; i < 8; i++) {
+            for (let i = 0; i < this.size.x; i++) {
                 let row = [];
-                for (let k = 0; k < 8; k++) {
+                for (let k = 0; k < this.size.z; k++) {
                     row.push(null);
                 }
                 pane.push(row);
@@ -26,9 +27,9 @@ export default class History {
     }
 
     reset() {
-        for (let j = 0; j < 16; j++) {
-            for (let i = 0; i < 8; i++) {
-                for (let k = 0; k < 8; k++) {
+        for (let j = 0; j < this.size.y; j++) {
+            for (let i = 0; i < this.size.x; i++) {
+                for (let k = 0; k < this.size.z; k++) {
                     if (this._dict[j][i][k])
                         this.object3d.remove(this._dict[j][i][k]);
                 }
@@ -61,19 +62,19 @@ export default class History {
     }
 
     eliminate(layer) {
-        for (let i = 0; i < 8; i++) {
-            for (let k = 0; k < 8; k++) {
+        for (let i = 0; i < this.size.x; i++) {
+            for (let k = 0; k < this.size.z; k++) {
                 this.object3d.remove(this._dict[layer][i][k]);
             }
         }
-        for (let child of this.object3d.children) {
-            child.translateY(-1);
-        }
-        for (let j = layer; j < 16; j++) {
-            for (let i = 0; i < 8; i++) {
-                for (let k = 0; k < 8; k++) {
-                    if (j + 1 < 16)
+        for (let j = layer; j < this.size.y; j++) {
+            for (let i = 0; i < this.size.x; i++) {
+                for (let k = 0; k < this.size.z; k++) {
+                    if (j + 1 < this.size.y) {
                         this._dict[j][i][k] = this._dict[j + 1][i][k];
+                        if (this._dict[j][i][k])
+                            this._dict[j][i][k].translateY(-1);
+                    }
                     else this._dict[j][i][k] = null;
                 }
             }

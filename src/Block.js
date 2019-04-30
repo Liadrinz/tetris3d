@@ -2,15 +2,17 @@ import * as THREE from 'three';
 import { scene } from './Root';
 import { board } from './logic';
 import { addScore } from './Score';
+import { size } from './config';
 
 export default class Block {
     constructor(positions, center, color, prev = null) {
+        this.size = size;
         this.positions = positions;
         this.center = center;
         this.color = color;
         this.prev = prev;
         this.state = {
-            speed: 0.005,
+            speed: 0.01,
             shown: false,
             readyToSettle: false,
             settled: false,
@@ -35,7 +37,7 @@ export default class Block {
             this.object3d.add(border);
         }
 
-        this.object3d.position.y = 8;
+        this.object3d.position.y = 10;
     }
 
     _collisionXZ(direction) {
@@ -50,10 +52,10 @@ export default class Block {
                 if (cubeZ <= 0 || board.matrix[cubeY][cubeX][cubeZ - 1])
                     return true;
             } else if (direction === 'right') {
-                if (cubeX >= 7 || board.matrix[cubeY][cubeX + 1][cubeZ])
+                if (cubeX >= this.size.x - 1 || board.matrix[cubeY][cubeX + 1][cubeZ])
                     return true;
             } else if (direction === 'down') {
-                if (cubeZ >= 7 || board.matrix[cubeY][cubeX][cubeZ + 1])
+                if (cubeZ >= this.size.z - 1 || board.matrix[cubeY][cubeX][cubeZ + 1])
                     return true;
             }
         }

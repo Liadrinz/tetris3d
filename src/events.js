@@ -7,7 +7,7 @@ const R = Math.PI / 2;
  * axis: 0=x, 1=y, 2=z
  * direction: 1=counterclockwise, -1=clockwise
  */
-function rotateBlockPositions(block, axis, direction, callback = () => { }) {
+function rotateBlockPositions(block, axis, direction, callback = (err) => { }) {
     let dim = [];
     for (let i = 0; i < 3; i++) {
         if (i === axis) {
@@ -40,19 +40,18 @@ function rotateBlockPositions(block, axis, direction, callback = () => { }) {
         }
 
         console.log(cubeX, cubeY, cubeZ);
-
-        let flag = board.matrix[cubeY][cubeX][cubeZ];
-        if (flag)
+        if (cubeX >= 0 && cubeY >= 0 && cubeZ >= 0 && !board.matrix[cubeY][cubeX][cubeZ])
+            cache.push([resI, resJ]);
+        else {
+            callback(true);
             return;
-        cache.push([resI, resJ]);
-
-        [position[dim[0]], position[dim[1]]] = [resI, resJ];
+        }
     }
     let idx = 0;
     for (let position of block.positions) {
         [position[dim[0]], position[dim[1]]] = cache[idx++];
     }
-    callback();
+    callback(false);
 }
 
 export function blockControl(currentBox) {
@@ -67,39 +66,51 @@ export function blockControl(currentBox) {
             if (block.state.allowRotate && (e.keyCode > 36 && e.keyCode < 41 || e.keyCode === 188 || e.keyCode === 190)) {
                 let intervalEvent = null, count = 0;
                 if (e.keyCode === 37) {
-                    rotateBlockPositions(block, 1, 1, () => {
-                        intervalEvent = () => {
-                            block.object3d.rotateY(-R * 0.2);
+                    rotateBlockPositions(block, 1, 1, (err) => {
+                        if (!err) {
+                            intervalEvent = () => {
+                                block.object3d.rotateY(-R * 0.2);
+                            }
                         }
                     });
                 } else if (e.keyCode === 38) {
-                    rotateBlockPositions(block, 0, -1, () => {
-                        intervalEvent = () => {
-                            block.object3d.rotateX(-R * 0.2);
+                    rotateBlockPositions(block, 0, -1, (err) => {
+                        if (!err) {
+                            intervalEvent = () => {
+                                block.object3d.rotateX(-R * 0.2);
+                            }
                         }
                     });
                 } else if (e.keyCode === 39) {
-                    rotateBlockPositions(block, 1, -1, () => {
-                        intervalEvent = () => {
-                            block.object3d.rotateY(R * 0.2);
+                    rotateBlockPositions(block, 1, -1, (err) => {
+                        if (!err) {
+                            intervalEvent = () => {
+                                block.object3d.rotateY(R * 0.2);
+                            }
                         }
                     });
                 } else if (e.keyCode === 40) {
-                    rotateBlockPositions(block, 0, 1, () => {
-                        intervalEvent = () => {
-                            block.object3d.rotateX(R * 0.2);
+                    rotateBlockPositions(block, 0, 1, (err) => {
+                        if (!err) {
+                            intervalEvent = () => {
+                                block.object3d.rotateX(R * 0.2);
+                            }
                         }
                     });
                 } else if (e.keyCode === 188) {
-                    rotateBlockPositions(block, 2, 1, () => {
-                        intervalEvent = () => {
-                            block.object3d.rotateZ(R * 0.2)
+                    rotateBlockPositions(block, 2, 1, (err) => {
+                        if (!err) {
+                            intervalEvent = () => {
+                                block.object3d.rotateZ(R * 0.2)
+                            }
                         }
                     });
                 } else if (e.keyCode === 190) {
-                    rotateBlockPositions(block, 2, -1, () => {
-                        intervalEvent = () => {
-                            block.object3d.rotateZ(-R * 0.2);
+                    rotateBlockPositions(block, 2, -1, (err) => {
+                        if (!err) {
+                            intervalEvent = () => {
+                                block.object3d.rotateZ(-R * 0.2);
+                            }
                         }
                     });
                 }

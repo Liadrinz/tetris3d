@@ -4,35 +4,15 @@
 
 ```shell
 npm i
+npm start
 ```
 或者
 ```shell
 yarn
+yarn start
 ```
 
-##### 执行webpack打包并启动
-
-```shell
-node app.js
-```
-
-##### 直接启动
-
-```shell
-node app.js run
-```
-
-##### webpack打包
-
-```shell
-node app.js build
-```
-或者
-```shell
-webpack
-```
-
-### 运行
+### 浏览器
 
 ```text
 http://localhost:3000

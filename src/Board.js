@@ -1,24 +1,21 @@
 import * as THREE from 'three';
 import { scene } from './Root';
 import { currentBox, history, board } from './logic';
+import { size } from './config';
 
 export default class Board {
     constructor(history) {
+        this.size = size;
         this._init(history);
     }
 
     _init(history) {
-        this.size = {
-            x: 8,
-            y: 16,
-            z: 8
-        };
         this.history = history;
         this.object3d = new THREE.Group();
-        var plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(8, 8), new THREE.MeshPhongMaterial({ color: 0xa0a0a0 }));
+        var plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(this.size.x, this.size.z), new THREE.MeshPhongMaterial({ color: 0xa0a0a0 }));
         plane.rotation.x = - Math.PI / 2;
         plane.receiveShadow = true;
-        plane.position.set(4, 0, 4);
+        plane.position.set(parseInt(this.size.x/2), 0, parseInt(this.size.z/2));
         this.object3d.add(plane);
         scene.add(this.object3d);
         this.matrix = [];
