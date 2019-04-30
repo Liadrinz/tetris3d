@@ -10,7 +10,7 @@ export default class Block {
         this.color = color;
         this.prev = prev;
         this.state = {
-            speed: 0.015,
+            speed: 0.005,
             shown: false,
             readyToSettle: false,
             settled: false,

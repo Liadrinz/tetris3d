@@ -28,22 +28,19 @@ function getRandomShape() {
         ],
         center: [1, 1, 2]
     };
-    let LPiece = {
+    let smallLPiece = {
         mat: [
-            [0, 0, 0], [0, 0, 1],
-            [1, 0, 0], [2, 0, 0]
-        ],
-        center: [1, 1, 1]
-    };
-    let circle = {
-        mat: [
-            [0, 0, 0], [1, 0, 0], [2, 0, 0],
-            [2, 0, 1], [2, 0, 2], [1, 0, 2],
-            [0, 0, 2], [0, 0, 1]
+            [0, 0, 0], [0, 0, 1], [1, 0, 0]
         ],
         center: [1, 1, 1]
     }
-    let options = [fourStage, doubleCube, longPiece, LPiece, circle];
+    let unitCube = {
+        mat: [
+            [0,0,0]
+        ],
+        center: [1,1,1]
+    }
+    let options = [fourStage, doubleCube, longPiece, smallLPiece, unitCube];
     return options[parseInt(Math.random() * options.length)];
 }
 

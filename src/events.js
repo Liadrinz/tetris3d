@@ -26,24 +26,25 @@ function rotateBlockPositions(block, axis, direction, callback = () => { }) {
         let [resI, resJ] = [cube[0] - 0.5, cube[1] - 0.5];
         let cubeX, cubeY, cubeZ;
         if (axis === 0) {
-            cubeX = parseInt(block.object3d.position.x - block.center[0] + position[0] + 0.5);
-            cubeY = parseInt(block.object3d.position.y - block.center[1] + resI + 0.5);
-            cubeZ = parseInt(block.object3d.position.z - block.center[2] + resJ + 0.5);
+            cubeX = parseInt(block.object3d.position.x - block.center[0] + position[0]);
+            cubeY = parseInt(block.object3d.position.y - block.center[1] + resI);
+            cubeZ = parseInt(block.object3d.position.z - block.center[2] + resJ);
         } else if (axis === 1) {
-            cubeX = parseInt(block.object3d.position.x - block.center[0] + resI + 0.5);
-            cubeY = parseInt(block.object3d.position.y - block.center[1] + position[1] + 0.5);
-            cubeZ = parseInt(block.object3d.position.z - block.center[2] + resJ + 0.5);
+            cubeX = parseInt(block.object3d.position.x - block.center[0] + resI);
+            cubeY = parseInt(block.object3d.position.y - block.center[1] + position[1]);
+            cubeZ = parseInt(block.object3d.position.z - block.center[2] + resJ);
         } else {
-            cubeX = parseInt(block.object3d.position.x - block.center[0] + resI + 0.5);
-            cubeY = parseInt(block.object3d.position.y - block.center[1] + resJ + 0.5);
-            cubeZ = parseInt(block.object3d.position.z - block.center[2] + position[2] + 0.5);
+            cubeX = parseInt(block.object3d.position.x - block.center[0] + resI);
+            cubeY = parseInt(block.object3d.position.y - block.center[1] + resJ);
+            cubeZ = parseInt(block.object3d.position.z - block.center[2] + position[2]);
         }
 
-        let flag = board.matrix[cubeY][cubeX][cubeZ];
+        console.log(cubeX, cubeY, cubeZ);
 
-        if (!flag)
-            cache.push([resI, resJ]);
-        else return;
+        let flag = board.matrix[cubeY][cubeX][cubeZ];
+        if (flag)
+            return;
+        cache.push([resI, resJ]);
 
         [position[dim[0]], position[dim[1]]] = [resI, resJ];
     }
