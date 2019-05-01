@@ -1,21 +1,21 @@
 import * as THREE from 'three';
 import { scene } from './Root';
 import { addScore } from './Score';
-import { size } from './config';
+import { BOARD_SIZE } from './config';
 
 export default class History {
     constructor() {
-        this.size = size;
+        this.boardSize = BOARD_SIZE;
         this._init();
     }
 
     _init() {
-        this._dict = new Array(this.size.y);
-        for (let j = 0; j < this.size.y; j++) {
+        this._dict = new Array(this.boardSize.y);
+        for (let j = 0; j < this.boardSize.y; j++) {
             let pane = [];
-            for (let i = 0; i < this.size.x; i++) {
+            for (let i = 0; i < this.boardSize.x; i++) {
                 let row = [];
-                for (let k = 0; k < this.size.z; k++) {
+                for (let k = 0; k < this.boardSize.z; k++) {
                     row.push(null);
                 }
                 pane.push(row);
@@ -27,9 +27,9 @@ export default class History {
     }
 
     reset() {
-        for (let j = 0; j < this.size.y; j++) {
-            for (let i = 0; i < this.size.x; i++) {
-                for (let k = 0; k < this.size.z; k++) {
+        for (let j = 0; j < this.boardSize.y; j++) {
+            for (let i = 0; i < this.boardSize.x; i++) {
+                for (let k = 0; k < this.boardSize.z; k++) {
                     if (this._dict[j][i][k])
                         this.object3d.remove(this._dict[j][i][k]);
                 }
@@ -42,9 +42,7 @@ export default class History {
     write(block) {
         scene.remove(block.object3d);
         for (let position of block.positions) {
-            let cubeX = parseInt(block.object3d.position.x - block.center[0] + position[0] + 0.5);
-            let cubeY = parseInt(block.object3d.position.y - block.center[1] + position[1] + 0.5);
-            let cubeZ = parseInt(block.object3d.position.z - block.center[2] + position[2] + 0.5);
+            let [cubeX, cubeY, cubeZ] = block.getCubeMatrixIndex(position);
             let cubeWithBorder = new THREE.Group();
             let cube = new THREE.Mesh(
                 new THREE.BoxGeometry(1, 1, 1),
@@ -62,15 +60,15 @@ export default class History {
     }
 
     eliminate(layer) {
-        for (let i = 0; i < this.size.x; i++) {
-            for (let k = 0; k < this.size.z; k++) {
+        for (let i = 0; i < this.boardSize.x; i++) {
+            for (let k = 0; k < this.boardSize.z; k++) {
                 this.object3d.remove(this._dict[layer][i][k]);
             }
         }
-        for (let j = layer; j < this.size.y; j++) {
-            for (let i = 0; i < this.size.x; i++) {
-                for (let k = 0; k < this.size.z; k++) {
-                    if (j + 1 < this.size.y) {
+        for (let j = layer; j < this.boardSize.y; j++) {
+            for (let i = 0; i < this.boardSize.x; i++) {
+                for (let k = 0; k < this.boardSize.z; k++) {
+                    if (j + 1 < this.boardSize.y) {
                         this._dict[j][i][k] = this._dict[j + 1][i][k];
                         if (this._dict[j][i][k])
                             this._dict[j][i][k].translateY(-1);

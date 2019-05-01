@@ -1,11 +1,11 @@
 import * as THREE from 'three';
 import { scene } from './Root';
 import { currentBox, history, board } from './logic';
-import { size } from './config';
+import { BOARD_SIZE } from './config';
 
 export default class Board {
     constructor(history) {
-        this.size = size;
+        this.size = BOARD_SIZE;
         this._init(history);
     }
 

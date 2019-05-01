@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { CAMERA_POSITION, CAMERA_LOOK_AT } from './config';
 
 var container;
 var camera, scene, renderer, light;
@@ -8,11 +9,11 @@ var init = function () {
     document.body.appendChild(container);
 
     camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 2000);
-    camera.position.set(8, 8, 8);
-    camera.lookAt(0, 0, 0);
+    camera.position.set(...CAMERA_POSITION);
+    camera.lookAt(...CAMERA_LOOK_AT);
 
     scene = new THREE.Scene();
-    
+
     let ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambientLight);
 

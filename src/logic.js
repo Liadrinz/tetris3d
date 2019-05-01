@@ -50,8 +50,6 @@ function getRandomShape() {
     return options[parseInt(Math.random() * options.length)];
 }
 
-camera.position.set(14, 15, 14);
-
 export let history = new History();
 
 export let board = new Board(history);
