@@ -18,6 +18,11 @@ yarn start
 http://localhost:3000
 ```
 
+### 直接打开
+
+打开public/index.html即可
+
+
 ### 游戏规则
 
 
