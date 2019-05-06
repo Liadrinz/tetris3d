@@ -1,21 +1,68 @@
 import * as THREE from 'three';
 import { scene } from './Root';
 import { currentBox, history, board } from './logic';
-import { BOARD_SIZE } from './config';
+import { BOARD_SIZE, MAX_LAYERS, MAX_OPACITY, BLOCK_SPEED } from './config';
+import { showInfo } from './ui';
 
+const R = Math.PI / 2;
+
+// only one Board instance in a game
 export default class Board {
     constructor(history) {
         this.size = BOARD_SIZE;
+        this.state = {
+            fadeStop: false,
+            showStop: false
+        }
+        this.leftMaterial = new THREE.MeshPhongMaterial({ color: 0xa0a0a0, opacity: 0.0, transparent: true });
+        let leftWall = new THREE.Mesh(
+            new THREE.PlaneBufferGeometry(this.size.z, this.size.y),
+            this.leftMaterial
+        );
+        leftWall.translateX(-0.02);
+        leftWall.translateY(parseInt(BOARD_SIZE.y / 2));
+        leftWall.translateZ(parseInt(BOARD_SIZE.z / 2));
+        leftWall.rotateY(R);
+        this.rightMaterial = new THREE.MeshPhongMaterial({ color: 0xa0a0a0, opacity: 0.0, transparent: true });
+        let rightWall = new THREE.Mesh(
+            new THREE.PlaneBufferGeometry(this.size.z, this.size.y),
+            this.rightMaterial
+        );
+        rightWall.translateX(BOARD_SIZE.x + 0.02);
+        rightWall.translateY(parseInt(BOARD_SIZE.y / 2));
+        rightWall.translateZ(parseInt(BOARD_SIZE.z / 2));
+        rightWall.rotateY(R);
+        this.frontMaterial = new THREE.MeshPhongMaterial({ color: 0xa0a0a0, opacity: 0.0, transparent: true });
+        let frontWall = new THREE.Mesh(
+            new THREE.PlaneBufferGeometry(this.size.x, this.size.y),
+            this.frontMaterial
+        );
+        frontWall.translateX(parseInt(BOARD_SIZE.x / 2));
+        frontWall.translateY(parseInt(BOARD_SIZE.y / 2));
+        frontWall.translateZ(-0.02)
+        this.backMaterial = new THREE.MeshPhongMaterial({ color: 0xa0a0a0, opacity: 0.0, transparent: true });
+        let backWall = new THREE.Mesh(
+            new THREE.PlaneBufferGeometry(this.size.x, this.size.y),
+            this.backMaterial
+        );
+        backWall.translateX(parseInt(BOARD_SIZE.x / 2));
+        backWall.translateY(parseInt(BOARD_SIZE.y / 2));
+        backWall.translateZ(BOARD_SIZE.z + 0.02);
+        scene.add(leftWall, rightWall, frontWall, backWall);
         this._init(history);
     }
 
     _init(history) {
+        this.score = 0;
         this.history = history;
         this.object3d = new THREE.Group();
-        var plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(this.size.x, this.size.z), new THREE.MeshPhongMaterial({ color: 0xa0a0a0 }));
+        var plane = new THREE.Mesh(
+            new THREE.PlaneBufferGeometry(this.size.x, this.size.z),
+            new THREE.MeshPhongMaterial({ color: 0xa0a0a0 })
+        );
         plane.rotation.x = - Math.PI / 2;
         plane.receiveShadow = true;
-        plane.position.set(parseInt(this.size.x/2), 0, parseInt(this.size.z/2));
+        plane.position.set(parseInt(this.size.x / 2), 0, parseInt(this.size.z / 2));
         this.object3d.add(plane);
         scene.add(this.object3d);
         this.matrix = [];
@@ -29,6 +76,76 @@ export default class Board {
                 pane.push(subPane);
             }
             this.matrix.push(pane);
+        }
+    }
+
+    overflowShow(direction) {
+        showInfo('Stucked!', '#88aacc');
+        this.state.showStop = false;
+        this.state.fadeStop = true;
+        if (direction === 'left') {
+            if (this.leftMaterial.opacity >= MAX_OPACITY || this.state.showStop) return;
+            let s = setInterval(() => {
+                if (this.leftMaterial.opacity >= MAX_OPACITY || this.state.showStop)
+                    clearInterval(s);
+                this.leftMaterial.opacity += 0.1
+            }, 20);
+        } else if (direction === 'right') {
+            if (this.rightMaterial.opacity >= MAX_OPACITY || this.state.showStop) return;
+            let s = setInterval(() => {
+                if (this.rightMaterial.opacity >= MAX_OPACITY || this.state.showStop)
+                    clearInterval(s);
+                this.rightMaterial.opacity += 0.1
+            }, 20);
+        } else if (direction === 'up') {
+            if (this.frontMaterial.opacity >= MAX_OPACITY || this.state.showStop) return;
+            let s = setInterval(() => {
+                if (this.frontMaterial.opacity >= MAX_OPACITY || this.state.showStop)
+                    clearInterval(s);
+                this.frontMaterial.opacity += 0.1
+            }, 20);
+        } else if (direction === 'down') {
+            if (this.backMaterial.opacity >= MAX_OPACITY || this.state.showStop) return;
+            let s = setInterval(() => {
+                if (this.backMaterial.opacity >= MAX_OPACITY || this.state.showStop)
+                    clearInterval(s);
+                this.backMaterial.opacity += 0.1
+            }, 20);
+        }
+    }
+
+    overflowFade(direction) {
+        let s;
+        this.state.fadeStop = false;
+        this.state.showStop = true;
+        if (direction === 'left') {
+            if (this.leftMaterial.opacity <= 0 || this.state.fadeStop) return;
+            let s = setInterval(() => {
+                if (this.leftMaterial.opacity <= 0 || this.state.fadeStop)
+                    clearInterval(s);
+                this.leftMaterial.opacity -= 0.1
+            }, 20);
+        } else if (direction === 'right') {
+            if (this.rightMaterial.opacity <= 0 || this.state.fadeStop) return;
+            let s = setInterval(() => {
+                if (this.rightMaterial.opacity <= 0 || this.state.fadeStop)
+                    clearInterval(s);
+                this.rightMaterial.opacity -= 0.1
+            }, 20);
+        } else if (direction === 'up') {
+            if (this.frontMaterial.opacity <= 0 || this.state.fadeStop) return;
+            let s = setInterval(() => {
+                if (this.frontMaterial.opacity <= 0 || this.state.fadeStop)
+                    clearInterval(s);
+                this.frontMaterial.opacity -= 0.1
+            }, 20);
+        } else if (direction === 'down') {
+            if (this.backMaterial.opacity <= 0 || this.state.fadeStop) return;
+            let s = setInterval(() => {
+                if (this.backMaterial.opacity <= 0 || this.state.fadeStop)
+                    clearInterval(s);
+                this.backMaterial.opacity -= 0.1
+            }, 20);
         }
     }
 
@@ -65,17 +182,22 @@ export default class Board {
     }
 
     dieCheck() {
-        for (let j = 7; j < this.size.y; j++) {
+        for (let j = MAX_LAYERS - 1; j < this.size.y; j++) {
             for (let i = 0; i < this.size.x; i++) {
                 for (let k = 0; k < this.size.z; k++) {
                     if (this.matrix[j][i][k] === 1) {
-                        alert('Click to Restart!');
-                        scene.remove(currentBox[0]);
-                        history.reset();
-                        board.reset(history);
+                        return true;
                     }
                 }
             }
         }
+        return false;
+    }
+
+    restart() {
+        scene.remove(currentBox[0].object3d);
+        history.reset();
+        board.reset(history);
+        currentBox[0].state.speed = BLOCK_SPEED;
     }
 }

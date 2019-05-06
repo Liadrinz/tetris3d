@@ -3,6 +3,7 @@ import { scene } from './Root';
 import { board } from './logic';
 import { addScore } from './Score';
 import { BOARD_SIZE, BLOCK_SPEED, INIT_BLOCK_Y } from './config';
+import { showInfo } from './ui';
 
 export default class Block {
     constructor(positions, center, color) {
@@ -11,11 +12,13 @@ export default class Block {
         this.center = center;
         this.color = color;
         this.state = {
+            originalSpeed: BLOCK_SPEED,
             speed: BLOCK_SPEED,
             shown: false,
             readyToSettle: false,
             settled: false,
-            allowRotate: true
+            allowRotate: true,
+            paused: false
         }
         this._cachedY = 0;
         this.object3d = new THREE.Group();
@@ -50,16 +53,32 @@ export default class Block {
         for (let position of this.positions) {
             let [cubeX, cubeY, cubeZ] = this.getCubeMatrixIndex(position);
             if (direction === 'left') {
-                if (cubeX <= 0 || board.matrix[cubeY][cubeX - 1][cubeZ])
+                if (cubeX <= 0) {
+                    board.overflowShow('left');
+                    return true;
+                }
+                if (board.matrix[cubeY][cubeX - 1][cubeZ])
                     return true;
             } else if (direction === 'up') {
-                if (cubeZ <= 0 || board.matrix[cubeY][cubeX][cubeZ - 1])
+                if (cubeZ <= 0) {
+                    board.overflowShow('up');
+                    return true;
+                }
+                if (board.matrix[cubeY][cubeX][cubeZ - 1])
                     return true;
             } else if (direction === 'right') {
-                if (cubeX >= this.boardSize.x - 1 || board.matrix[cubeY][cubeX + 1][cubeZ])
+                if (cubeX >= this.boardSize.x - 1) {
+                    board.overflowShow('right')
+                    return true;
+                }
+                if (board.matrix[cubeY][cubeX + 1][cubeZ])
                     return true;
             } else if (direction === 'down') {
-                if (cubeZ >= this.boardSize.z - 1 || board.matrix[cubeY][cubeX][cubeZ + 1])
+                if (cubeZ >= this.boardSize.z - 1) {
+                    board.overflowShow('down');
+                    return true;
+                }
+                if (board.matrix[cubeY][cubeX][cubeZ + 1])
                     return true;
             }
         }
@@ -77,6 +96,10 @@ export default class Block {
     }
 
     update() {
+        if (this.state.paused) {
+            this.state.settled = false;
+            return;
+        }
         if (!this.state.shown) {
             scene.add(this.object3d);
             this.state.shown = true;
@@ -87,7 +110,8 @@ export default class Block {
                 if (this.state.readyToSettle && this._collisionY()) {
                     this.state.settled = true;
                     this.state.readyToSettle = false;
-                    addScore(this.positions.length);
+                    showInfo('+' + parseInt(this.positions.length * Math.pow(this.state.originalSpeed / BLOCK_SPEED, 2)), '#88aacc');
+                    addScore(parseInt(this.positions.length * Math.pow(this.state.originalSpeed / BLOCK_SPEED, 2)));
                     // update the info of the board
                     for (let position of this.positions) {
                         let [cubeX, cubeY, cubeZ] = this.getCubeMatrixIndex(position);
@@ -110,6 +134,8 @@ export default class Block {
         } else {
             if (!this._collisionY()) {
                 this.state.settled = false;
+            } else {
+                this.state.speed = this.state.originalSpeed;
             }
         }
     }

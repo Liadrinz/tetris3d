@@ -39,8 +39,27 @@ function rotateBlockPositions(block, axis, direction, callback = (err) => { }) {
             cubeZ = parseInt(block.object3d.position.z - block.center[2] + position[2]);
         }
 
-        console.log(cubeX, cubeY, cubeZ);
-        if (cubeX >= 0 && cubeY >= 0 && cubeZ >= 0 && !board.matrix[cubeY][cubeX][cubeZ])
+        if (cubeX < 0) {
+            board.overflowShow('left');
+            callback(true);
+            return;
+        }
+        if (cubeX >= board.size.x) {
+            board.overflowShow('right');
+            callback(true);
+            return;
+        }
+        if (cubeZ < 0) {
+            board.overflowShow('up');
+            callback(true);
+            return;
+        }
+        if (cubeZ >= board.size.z) {
+            board.overflowShow('down');
+            callback(true);
+            return;
+        }
+        if (!board.matrix[cubeY][cubeX][cubeZ])
             cache.push([resI, resJ]);
         else {
             callback(true);
@@ -57,6 +76,7 @@ function rotateBlockPositions(block, axis, direction, callback = (err) => { }) {
 export function blockControl(currentBox) {
     document.onkeydown = (e) => {
         let block = currentBox[0];
+        if (block.state.paused) return;
         if (block && !block.state.settled && block.state.shown) {
             // immediate
             if (e.keyCode === 32) {
@@ -155,5 +175,11 @@ export function blockControl(currentBox) {
                     block.object3d.translateZ(1);
             }
         }
+    }
+    document.onkeyup = (e) => {
+        board.overflowFade('left');
+        board.overflowFade('right');
+        board.overflowFade('up');
+        board.overflowFade('down');
     }
 }

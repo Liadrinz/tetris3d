@@ -1,0 +1,27 @@
+.control-bar {
+    display: inline-block;
+    position: absolute;
+    left: 100px;
+    top: 80px;
+}
+
+#pause-button {
+    color: #fff;
+    font-weight: bold;
+    font-size: 30px;
+    cursor: pointer;
+}
+
+#score-box {
+    display: inline-block;
+    position: absolute;
+    left: 5%;
+    top: 5%;
+    background: rgba(0, 0, 0, 0);
+    font-size: 30px;
+    color: #ffffff;
+}
+
+#score {
+    display: inline-block;
+}

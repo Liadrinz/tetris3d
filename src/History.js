@@ -1,12 +1,15 @@
 import * as THREE from 'three';
 import { scene } from './Root';
 import { addScore } from './Score';
-import { BOARD_SIZE } from './config';
+import { BOARD_SIZE, BLOCK_SPEED } from './config';
+import { currentBox } from './logic';
+import { showInfo } from './ui';
 
 export default class History {
     constructor() {
         this.boardSize = BOARD_SIZE;
         this._init();
+        this.prevBlock = null;
     }
 
     _init() {
@@ -40,6 +43,7 @@ export default class History {
     }
 
     write(block) {
+        this.prevBlock = block;
         scene.remove(block.object3d);
         for (let position of block.positions) {
             let [cubeX, cubeY, cubeZ] = block.getCubeMatrixIndex(position);
@@ -77,6 +81,7 @@ export default class History {
                 }
             }
         }
-        addScore(64);
+        showInfo('<p style="font-size: 40px; padding-top: 50px;">+' + parseInt(100 * Math.pow(this.prevBlock.state.originalSpeed / BLOCK_SPEED, 2)) + '</p>', '#cc3388');
+        addScore(parseInt(100 * Math.pow(this.prevBlock.state.originalSpeed / BLOCK_SPEED, 2)));
     }
 }

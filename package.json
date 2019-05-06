@@ -2,6 +2,7 @@
   "dependencies": {
     "babel": "^6.23.0",
     "electron-packager": "^13.1.1",
+    "element-ui": "^2.8.2",
     "express": "^4.16.4",
     "jquery": "^3.4.0",
     "node-cmd": "^3.0.0",
@@ -9,6 +10,8 @@
     "webpack": "^4.30.0"
   },
   "devDependencies": {
+    "css-loader": "^2.1.1",
+    "style-loader": "^0.23.1",
     "webpack-cli": "^3.3.1"
   },
   "name": "tetris3d",
