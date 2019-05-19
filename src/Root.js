@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { CAMERA_POSITION, CAMERA_LOOK_AT } from './config';
+import { CAMERA_POSITION, CAMERA_LOOK_AT, THEME } from './config';
 
 var container;
 var camera, scene, renderer, light;
@@ -14,10 +14,15 @@ var init = function () {
 
     scene = new THREE.Scene();
 
+    if (THEME === 'LIGHT')
+        scene.background = new THREE.Color(0xccddee);
+    else if (THEME === 'DARK')
+        scene.background = new THREE.Color(0x334477);
+
     let ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambientLight);
 
-    light = new THREE.DirectionalLight(0xffffff);
+    light = new THREE.DirectionalLight(0xffffff, 0.5);
     light.position.set(0, 100, 0);
     light.lookAt(0, 0, 0);
     light.castShadow = true;
@@ -38,6 +43,8 @@ var init = function () {
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
     }, false);
+
+    document.getElementById('score-box').style.display = '';
 }
 
 init();

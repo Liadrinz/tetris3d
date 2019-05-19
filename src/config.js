@@ -5,3 +5,4 @@ export const BLOCK_SPEED = 0.01;  // speed of falling blocks
 export const INIT_BLOCK_Y = 10;  // initial position of a new block
 export const MAX_LAYERS = 8;  // the max safe layers
 export const MAX_OPACITY = 0.4;  // of the wall
+export const THEME = 'DARK';

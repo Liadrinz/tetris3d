@@ -4,6 +4,7 @@ import { showMessage, hideMessage } from './ui';
 import Board from './Board';
 import Block from './Block';
 import History from './History';
+import { THEME } from './config';
 
 function getRandomShape() {
     // let fourStage = {
@@ -51,6 +52,9 @@ function getRandomShape() {
     return options[parseInt(Math.random() * options.length)];
 }
 
+const lightColors = [0x8cbaff, 0x8cffdd, 0x8cffdd, 0xb2ff8c, 0xe5ff8c, 0xff978c];
+const darkColors = [0x395c91, 0x39918c, 0x39916f, 0x39914e, 0x5e9139, 0x913966];
+
 export let history = new History();
 
 export let board = new Board(history);
@@ -94,7 +98,10 @@ export default function loop() {
             speed = block.state.originalSpeed;
         }
         let shape = getRandomShape();
-        block = new Block(shape.mat, shape.center, parseInt(Math.random() * 0xffffff));
+        if (THEME === 'LIGHT')
+            block = new Block(shape.mat, shape.center, lightColors[parseInt(Math.random() * lightColors.length)]);
+        else if (THEME === 'DARK')
+            block = new Block(shape.mat, shape.center, darkColors[parseInt(Math.random() * darkColors.length)]);
         if (speed) {
             block.state.originalSpeed = speed * 1.005;
             block.state.speed = speed * 1.005;

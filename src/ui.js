@@ -82,3 +82,10 @@ export function loadControlBar() {
     bar.appendChild(pauseButton());
     document.body.appendChild(bar);
 }
+
+export function loadThemeSwitch() {
+    let themeSwitch = document.createElement('div');
+    themeSwitch.className = 'theme-switch';
+    themeSwitch.innerHTML = '☀/🌙';
+    document.body.appendChild(themeSwitch);
+}
