@@ -4,6 +4,7 @@ import { addScore } from './Score';
 import { BOARD_SIZE, BLOCK_SPEED } from './config';
 import { currentBox } from './logic';
 import { showInfo } from './ui';
+import { freeDrop } from './Physical';
 
 export default class History {
     constructor() {
@@ -63,6 +64,39 @@ export default class History {
         }
     }
 
+    eliminateRow(layer, index, axis = 'z') {
+        if (axis === 'z') {
+            for (let i = 0; i < this.boardSize.x; i++) {
+                this.object3d.remove(this._dict[layer][i][index]);
+            }
+            for (let j = layer; j < this.boardSize.y; j++) {
+                for (let i = 0; i < this.boardSize.x; i++) {
+                    if (j + 1 < this.boardSize.y) {
+                        this._dict[j][i][index] = this._dict[j + 1][i][index];
+                        if (this._dict[j][i][index])
+                            freeDrop(this._dict[j][i][index], 1);
+                        else this._dict[j][i][index] = null;
+                    }
+                }
+            }
+        } else if (axis === 'x') {
+            for (let k = 0; k < this.boardSize.z; k++) {
+                this.object3d.remove(this._dict[layer][index][k]);
+            }
+            for (let j = layer; j < this.boardSize.y; j++) {
+                for (let k = 0; k < this.boardSize.z; k++) {
+                    if (j + 1 < this.boardSize.y) {
+                        this._dict[j][index][k] = this._dict[j + 1][index][k];
+                        if (this._dict[j][index][k])
+                            freeDrop(this._dict[j][index][k], 1);
+                        else this._dict[j][index][k] = null;
+                    }
+                }
+            }
+        }
+        showInfo('<p style="font-size: 40px; padding-top: 50px;">+' + parseInt(10 * Math.pow(this.prevBlock.state.originalSpeed / BLOCK_SPEED, 2)) + '</p>', '#79d0a4');
+    }
+
     eliminate(layer) {
         for (let i = 0; i < this.boardSize.x; i++) {
             for (let k = 0; k < this.boardSize.z; k++) {
@@ -75,13 +109,13 @@ export default class History {
                     if (j + 1 < this.boardSize.y) {
                         this._dict[j][i][k] = this._dict[j + 1][i][k];
                         if (this._dict[j][i][k])
-                            this._dict[j][i][k].translateY(-1);
+                            freeDrop(this._dict[j][i][k], 1);
                     }
                     else this._dict[j][i][k] = null;
                 }
             }
         }
-        showInfo('<p style="font-size: 40px; padding-top: 50px;">+' + parseInt(100 * Math.pow(this.prevBlock.state.originalSpeed / BLOCK_SPEED, 2)) + '</p>', '#cc3388');
+        showInfo('<p style="font-size: 60px; padding-top: 50px;">+' + parseInt(100 * Math.pow(this.prevBlock.state.originalSpeed / BLOCK_SPEED, 2)) + '</p>', '#cc3388');
         addScore(parseInt(100 * Math.pow(this.prevBlock.state.originalSpeed / BLOCK_SPEED, 2)));
     }
 }

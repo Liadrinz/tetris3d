@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { CAMERA_POSITION, CAMERA_LOOK_AT, THEME } from './config';
+import { CAMERA_POSITION, CAMERA_LOOK_AT, theme } from './config';
 
 var container;
 var camera, scene, renderer, light;
@@ -14,10 +14,7 @@ var init = function () {
 
     scene = new THREE.Scene();
 
-    if (THEME === 'LIGHT')
-        scene.background = new THREE.Color(0xccddee);
-    else if (THEME === 'DARK')
-        scene.background = new THREE.Color(0x334477);
+    scene.background = new THREE.Color(theme.background);
 
     let ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambientLight);
@@ -47,6 +44,6 @@ var init = function () {
     document.getElementById('score-box').style.display = '';
 }
 
-init();
+init()
 
 export { camera, scene, light, renderer };

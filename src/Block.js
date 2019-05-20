@@ -110,12 +110,13 @@ export default class Block {
                 if (this.state.readyToSettle && this._collisionY()) {
                     this.state.settled = true;
                     this.state.readyToSettle = false;
-                    showInfo('+' + parseInt(this.positions.length * Math.pow(this.state.originalSpeed / BLOCK_SPEED, 2)), '#88aacc');
+                    showInfo('+' + parseInt(this.positions.length * Math.pow(this.state.originalSpeed / BLOCK_SPEED, 2)), '#fff');
                     addScore(parseInt(this.positions.length * Math.pow(this.state.originalSpeed / BLOCK_SPEED, 2)));
                     // update the info of the board
                     for (let position of this.positions) {
                         let [cubeX, cubeY, cubeZ] = this.getCubeMatrixIndex(position);
                         board.matrix[cubeY][cubeX][cubeZ] = 1;
+                        board.colorMatrix[cubeY][cubeX][cubeZ] = this.color;
                     }
                 } else {
                     this.state.allowRotate = false;

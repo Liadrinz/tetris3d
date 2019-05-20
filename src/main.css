@@ -5,3 +5,16 @@ body {
     -webkit-user-select: none;
     user-select: none;
 }
+
+.option,
+#game-name {
+    color: #fff;
+}
+
+.option {
+    font-size: 40px;
+}
+
+#game-name {
+    font-size: 75px;
+}

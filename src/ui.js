@@ -1,15 +1,11 @@
 import './ui.css';
-import { currentBox, board } from './logic';
-
-export function showScore(score) {
-    let scoreBox = document.getElementById('score-box');
-    if (scoreBox)
-        document.body.removeChild(scoreBox);
-    let newBox = document.createElement('div');
-    newBox.id = 'score-box';
-    newBox.innerHTML = `Score: <div id="score">${score}</div>`;
-    document.body.appendChild(newBox);
-}
+import { board, history } from './logic';
+import { theme } from './config';
+import Block from './Block';
+import { scene } from './Root';
+import { freeDrop } from './Physical';
+import * as THREE from 'three';
+import { vueApp } from './main';
 
 export function showInfo(text, color) {
     let infoBox = document.createElement('p');
@@ -48,6 +44,13 @@ export function showMessage(text, color, callback) {
     infoBox.style.left = centerH + 'px';
     infoBox.style.top = centerV + 'px';
     infoBox.style.color = color;
+    window.addEventListener('resize', () => {
+        let centerH = window.innerWidth / 2 - infoBox.clientWidth / 2;
+        let centerV = window.innerHeight / 2 - infoBox.clientHeight / 2;
+        infoBox.style.left = centerH + 'px';
+        infoBox.style.top = centerV + 'px';
+        infoBox.style.color = color;
+    })
     callback();
 }
 
@@ -60,17 +63,14 @@ export function hideMessage(callback) {
 
 function pauseButton() {
     if (board.dieCheck()) return;
-    let pauseButton = document.createElement('div');
+    let pauseButton = document.createElement('el-button');
     pauseButton.id = 'pause-button';
-    pauseButton.innerHTML = "| |";
+    pauseButton.icon = 'el-icon-video-play';
     pauseButton.onclick = () => {
-        if (pauseButton.innerHTML === "| |") {
-            pauseButton.innerHTML = "▶";
-            currentBox[0].state.paused = true;
-
-        } else if (pauseButton.innerHTML === "▶") {
-            pauseButton.innerHTML = "| |";
-            currentBox[0].state.paused = false;
+        if (pauseButton.icon === 'el-icon-video-play') {
+            pauseButton.icon = 'el-icon-video-pause';
+        } else if (pauseButton.icon === 'el-icon-video-pause') {
+            pauseButton.icon = 'el-icon-video-play';
         }
     }
     return pauseButton;
@@ -83,9 +83,70 @@ export function loadControlBar() {
     document.body.appendChild(bar);
 }
 
-export function loadThemeSwitch() {
-    let themeSwitch = document.createElement('div');
-    themeSwitch.className = 'theme-switch';
-    themeSwitch.innerHTML = '☀/🌙';
-    document.body.appendChild(themeSwitch);
+export function showTitle() {
+    let T1 = new Block(
+        [[0, 3, 0], [1, 3, 0], [2, 3, 0], [1, 2, 0], [1, 1, 0], [1, 0, 0]],
+        [0, 0, 0],
+        theme.blockColors[0]
+    );
+    let E = new Block(
+        [[0, 3, 0], [1, 3, 0], [2, 3, 0], [0, 2, 0], [0, 1, 0], [0, 0, 0], [1, 0, 0], [2, 0, 0], [1, 1.5, 0]],
+        [0, 0, 0],
+        theme.blockColors[2]
+    );
+    let T2 = new Block(
+        [[0, 3, 0], [1, 3, 0], [2, 3, 0], [1, 2, 0], [1, 1, 0], [1, 0, 0]],
+        [0, 0, 0],
+        theme.blockColors[3]
+    );
+    let R = new Block(
+        [[0, 3, 0], [1, 3, 0], [0, 2, 0], [0, 1, 0], [0, 0, 0], [1, 1, 0], [2, 2.5, 0], [2, 1.5, 0], [2, 0, 0]],
+        [0, 0, 0],
+        theme.blockColors[1]
+    );
+    let I = new Block(
+        [[1, 3, 0], [1, 2, 0], [1, 1, 0], [1, 0, 0]],
+        [0, 0, 0],
+        theme.blockColors[2]
+    );
+    let S = new Block(
+        [[0, 3, 0], [1, 3, 0], [2, 3, 0], [0, 0, 0], [1, 0, 0], [2, 0, 0], [0, 2, 0], [1, 1.5, 0], [2, 1, 0]],
+        [0, 0, 0],
+        theme.blockColors[0]
+    );
+
+    let title = new THREE.Group();
+    let TETRIS = [T1, E, T2, R, I, S];
+    let total = [0, 0, 0, 0, 0, 0];
+    let direction = [1, -1, 1, -1, 1, -1];
+    for (let i = 0; i < TETRIS.length; i++) {
+        setInterval(() => {
+            TETRIS[i].object3d.translateY(direction[i] * 0.01);
+            total[i] += 0.01;
+            if (total[i] >= 0.3) {
+                total[i] = 0;
+                direction[i] = -direction[i];
+            }
+        }, Math.random() * 30 + 15);
+        TETRIS[i].object3d.translateX(4 * i);
+        TETRIS[i].object3d.translateY(-10);
+        title.add(TETRIS[i].object3d);
+    }
+    title.translateZ(-2);
+    title.rotateY(Math.PI / 4);
+    title.translateX(-12);
+    scene.add(title);
+
+    showMessage('[Press Space to start]', 0xfff, () => { });
+
+    let prev = document.onkeydown;
+
+    document.onkeydown = (e) => {
+        if (e.keyCode === 32) {
+            document.onkeydown = prev;
+            hideMessage(() => {});
+            vueApp.started = true;
+            scene.remove(title);
+        }
+    }
 }

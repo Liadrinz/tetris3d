@@ -66,21 +66,27 @@ export default class Board {
         this.object3d.add(plane);
         scene.add(this.object3d);
         this.matrix = [];
+        this.colorMatrix = [];
         for (let j = 0; j < this.size.y; j++) {
             let pane = [];
+            let colorPane = [];
             for (let i = 0; i < this.size.x; i++) {
                 let subPane = [];
+                let colorSubPane = [];
                 for (let k = 0; k < this.size.z; k++) {
                     subPane.push(0);
+                    colorSubPane.push(-1);
                 }
                 pane.push(subPane);
+                colorPane.push(colorSubPane);
             }
             this.matrix.push(pane);
+            this.colorMatrix.push(colorPane);
         }
     }
 
     overflowShow(direction) {
-        showInfo('Stucked!', '#88aacc');
+        showInfo('Stucked!', '#fff');
         this.state.showStop = false;
         this.state.fadeStop = true;
         if (direction === 'left') {
@@ -155,6 +161,72 @@ export default class Board {
     }
 
     eliminateCheck() {
+        let rowsToEliminate = [];
+
+        for (let j = 0; j < this.size.y; j++) {
+            for (let i = 0; i < this.size.x; i++) {
+                let equals = true, prev = this.colorMatrix[j][i][0];
+                for (let k = 1; k < this.size.z; k++) {
+                    if (this.colorMatrix[j][i][k] !== prev || this.colorMatrix[j][i][k] === -1) {
+                        equals = false;
+                        break;
+                    } else {
+                        prev = this.colorMatrix[j][i][k];
+                    }
+                }
+                if (equals) {
+                    rowsToEliminate.push([j, i, 'x']);
+                }
+            }
+        }
+
+        for (let j = 0; j < this.size.y; j++) {
+            for (let k = 0;  k < this.size.z; k++) {
+                let equals = true, prev = this.colorMatrix[j][0][k];
+                for (let i = 1; i < this.size.x; i++) {
+                    if (this.colorMatrix[j][i][k] !== prev || this.colorMatrix[j][i][k] === -1) {
+                        equals = false;
+                        break;
+                    } else {
+                        prev = this.colorMatrix[j][i][k];
+                    }
+                }
+                if (equals) {
+                    rowsToEliminate.push([j, k, 'z']);
+                }
+            }
+        }
+
+        for (let args of rowsToEliminate) {
+            let [layer, index, axis] = args;
+            this.history.eliminateRow(layer, index, axis);
+            if (axis === 'x') {
+                for (let k = 0; k < this.size.z; k++) {
+                    for (let j = layer; j < this.size.y; j++) {
+                        if (j + 1 < this.size.y) {
+                            this.matrix[j][index][k] = this.matrix[j + 1][index][k];
+                            this.colorMatrix[j][index][k] = this.colorMatrix[j + 1][index][k];
+                        } else {
+                            this.matrix[j][index][k] = 0;
+                            this.colorMatrix[j][index][k] = -1;
+                        }
+                    }
+                }
+            } else if (axis === 'z') {
+                for (let i = 0; i < this.size.x; i++) {
+                    for (let j = layer; j < this.size.y; j++) {
+                        if (j + 1 < this.size.y) {
+                            this.matrix[j][i][index] = this.matrix[j + 1][i][index];
+                            this.colorMatrix[j][i][index] = this.colorMatrix[j + 1][i][index];
+                        } else {
+                            this.matrix[j][i][index] = 0;
+                            this.colorMatrix[j][i][index] = -1;
+                        }
+                    }
+                }
+            }
+        }
+
         for (let j = 0; j < this.size.y; j++) {
             let eliminatable = true;
             for (let i = 0; i < this.size.x && eliminatable; i++) {
@@ -167,16 +239,22 @@ export default class Board {
             if (eliminatable) {
                 this.history.eliminate(j);
                 this.matrix.splice(j, 1);
+                this.colorMatrix.splice(j, 1);
                 j--;
                 let pane = [];
+                let colorPane = [];
                 for (let i = 0; i < this.size.x; i++) {
                     let subPane = [];
+                    let colorSubPane = [];
                     for (let k = 0; k < this.size.z; k++) {
                         subPane.push(0);
+                        colorSubPane.push(-1);
                     }
                     pane.push(subPane);
+                    colorPane.push(colorSubPane);
                 }
                 this.matrix.push(pane);
+                this.colorMatrix.push(colorPane);
             }
         }
     }

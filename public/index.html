@@ -4,14 +4,31 @@
 <head>
     <title>Tetris 3D</title>
     <meta charset="utf-8" />
+    <link rel="stylesheet" href="https://unpkg.com/element-ui@2.8.2/lib/theme-chalk/index.css">
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
-    <div id="score-box" style="display: none">
-        Score:
-        <div id="score">0</div>
+    <div id="vue-app" v-cloak>
+        <div v-show="started">
+            <div id="score-box">
+                Score {{score}}
+            </div>
+            <div class="control-bar">
+                <i id="pause-button" style="font-size: 50px; font-weight: bold;" class="el-icon-video-pause"
+                    @click="pauseOrPlay"></i>
+                <i id="theme-button" style="font-size: 50px; font-weight: bold;" class="el-icon-sunny"
+                    @click="switchTheme"></i>
+            </div>
+        </div>
     </div>
 </body>
+<script src="https://unpkg.com/vue@2.6.10/dist/vue.js"></script>
+<script src="https://unpkg.com/element-ui@2.8.2/lib/index.js"></script>
 <script src="bundle.js"></script>
 
 </html>

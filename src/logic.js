@@ -4,56 +4,12 @@ import { showMessage, hideMessage } from './ui';
 import Board from './Board';
 import Block from './Block';
 import History from './History';
-import { THEME } from './config';
+import { theme, shapes } from './config';
+import { vueApp } from './main';
 
 function getRandomShape() {
-    // let fourStage = {
-    //     mat: [
-    //         [0, 0, 0], [1, 0, 0],
-    //         [0, 1, 0], [0, 0, 1]
-    //     ],
-    //     center: [1, 1, 1]
-    // };
-    let doubleCube = {
-        mat: [
-            [0, 0, 0], [1, 0, 0],
-            [0, 0, 1], [1, 0, 1],
-            [0, 1, 0], [1, 1, 0],
-            [0, 1, 1], [1, 1, 1]
-        ],
-        center: [1, 1, 1]
-    };
-    let longPiece = {
-        mat: [
-            [0, 0, 0], [0, 0, 1],
-            [0, 0, 2], [0, 0, 3]
-        ],
-        center: [1, 1, 2]
-    };
-    let shortPiece = {
-        mat: [
-            [0, 0, 0], [0, 0, 1]
-        ],
-        center: [1, 1, 1]
-    }
-    let LPiece = {
-        mat: [
-            [0, 0, 0], [0, 0, 1], [1, 0, 0]
-        ],
-        center: [1, 1, 1]
-    };
-    let unitCube = {
-        mat: [
-            [0, 0, 0]
-        ],
-        center: [1, 1, 1]
-    };
-    let options = [doubleCube, longPiece, shortPiece, LPiece, unitCube];
-    return options[parseInt(Math.random() * options.length)];
+    return shapes[parseInt(Math.random() * shapes.length)];
 }
-
-const lightColors = [0x8cbaff, 0x8cffdd, 0x8cffdd, 0xb2ff8c, 0xe5ff8c, 0xff978c];
-const darkColors = [0x395c91, 0x39918c, 0x39916f, 0x39914e, 0x5e9139, 0x913966];
 
 export let history = new History();
 
@@ -69,10 +25,11 @@ let reset = false;
 export default function loop() {
     requestAnimationFrame(loop);
     renderer.render(scene, camera);
+    if (!vueApp.started) return;
     // logic
     if (board.dieCheck()) {
         currentBox[0].state.paused = true;
-        showMessage('<p style="text-align: center;">Blocks Overflow!<br><span style="font-size: 25px;">[press space to restart]</span></p>', '#88aacc', () => {
+        showMessage('<p style="text-align: center;">Blocks Overflow!<br><span style="font-size: 25px;">[press space to restart]</span></p>', '#fff', () => {
             document.onkeypress = (e) => {
                 if (e.keyCode === 32) {
                     document.onkeypress = undefined;
@@ -98,10 +55,7 @@ export default function loop() {
             speed = block.state.originalSpeed;
         }
         let shape = getRandomShape();
-        if (THEME === 'LIGHT')
-            block = new Block(shape.mat, shape.center, lightColors[parseInt(Math.random() * lightColors.length)]);
-        else if (THEME === 'DARK')
-            block = new Block(shape.mat, shape.center, darkColors[parseInt(Math.random() * darkColors.length)]);
+        block = new Block(shape.mat, shape.center, theme.blockColors[parseInt(Math.random() * theme.blockColors.length)]);
         if (speed) {
             block.state.originalSpeed = speed * 1.005;
             block.state.speed = speed * 1.005;
