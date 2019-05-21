@@ -1,5 +1,8 @@
 import * as THREE from 'three';
 import { board } from './logic';
+import { newHere } from './config';
+import { guideSteps } from './logic';
+import { showInfo, hideMessage } from './ui';
 
 const R = Math.PI / 2;
 
@@ -75,15 +78,33 @@ function rotateBlockPositions(block, axis, direction, callback = (err) => { }) {
 
 export function blockControl(currentBox) {
     document.onkeydown = (e) => {
+        if (newHere) {
+            if (guideSteps[0] <= 0 && (e.keyCode > 36 && e.keyCode < 41 || e.keyCode === 188 || e.keyCode === 190)) return;
+            if (guideSteps[1] <= 0 && e.keyCode === 32) return;
+        }
         let block = currentBox[0];
         if (block.state.paused) return;
         if (block && !block.state.settled && block.state.shown) {
             // immediate
             if (e.keyCode === 32) {
+                if (newHere) {
+                    guideSteps[2] += 1;
+                    if (guideSteps[2] === 1) {
+                        hideMessage(() => { });
+                        showInfo('<h1 style="color: #fff">Fantastic!</h1>', 0xfff);
+                    }
+                }
                 block.state.speed = 0.2;
             }
             // rotation
             if (block.state.allowRotate && (e.keyCode > 36 && e.keyCode < 41 || e.keyCode === 188 || e.keyCode === 190)) {
+                if (newHere) {
+                    guideSteps[1] += 1;
+                    if (guideSteps[1] === 1) {
+                        hideMessage(() => { });
+                        showInfo('<h1 style="color: #fff">Voila!</h1>', 0xfff);
+                    }
+                }
                 let intervalEvent = null, count = 0;
                 if (e.keyCode === 37) {
                     rotateBlockPositions(block, 1, 1, (err) => {
@@ -160,19 +181,28 @@ export function blockControl(currentBox) {
                     }, 20);
                 }
             }
-            // translation
-            if (e.keyCode === 65) {
-                if (!block._collisionXZ('left'))
-                    block.object3d.translateX(-1);
-            } else if (e.keyCode === 87) {
-                if (!block._collisionXZ('up'))
-                    block.object3d.translateZ(-1);
-            } else if (e.keyCode === 68) {
-                if (!block._collisionXZ('right'))
-                    block.object3d.translateX(1);
-            } else if (e.keyCode === 83) {
-                if (!block._collisionXZ('down'))
-                    block.object3d.translateZ(1);
+            if (e.keyCode === 65 || e.keyCode === 87 || e.keyCode === 68 || e.keyCode === 83) {
+                if (newHere) {
+                    guideSteps[0] += 1;
+                    if (guideSteps[0] === 1) {
+                        hideMessage(() => { });
+                        showInfo('<h1 style="color: #fff">Great!</h1>', 0xfff);
+                    }
+                }
+                // translation
+                if (e.keyCode === 65) {
+                    if (!block._collisionXZ('left'))
+                        block.object3d.translateX(-1);
+                } else if (e.keyCode === 87) {
+                    if (!block._collisionXZ('up'))
+                        block.object3d.translateZ(-1);
+                } else if (e.keyCode === 68) {
+                    if (!block._collisionXZ('right'))
+                        block.object3d.translateX(1);
+                } else if (e.keyCode === 83) {
+                    if (!block._collisionXZ('down'))
+                        block.object3d.translateZ(1);
+                }
             }
         }
     }

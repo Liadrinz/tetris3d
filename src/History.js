@@ -95,6 +95,7 @@ export default class History {
             }
         }
         showInfo('<p style="font-size: 40px; padding-top: 50px;">+' + parseInt(10 * Math.pow(this.prevBlock.state.originalSpeed / BLOCK_SPEED, 2)) + '</p>', '#79d0a4');
+        addScore(parseInt(10 * Math.pow(this.prevBlock.state.originalSpeed / BLOCK_SPEED, 2)));
     }
 
     eliminate(layer) {

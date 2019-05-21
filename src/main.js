@@ -63,5 +63,4 @@ export let vueApp = new Vue({
     }
 });
 
-showTitle();
 loop();

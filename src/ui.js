@@ -1,9 +1,8 @@
 import './ui.css';
-import { board, history } from './logic';
+import { board } from './logic';
 import { theme } from './config';
 import Block from './Block';
 import { scene } from './Root';
-import { freeDrop } from './Physical';
 import * as THREE from 'three';
 import { vueApp } from './main';
 
@@ -31,19 +30,44 @@ export function showInfo(text, color) {
     }, 50);
 }
 
-export function showMessage(text, color, callback) {
-    if (document.getElementById('message')) return;
+export function showMessage(text, color, callback, flash=true, align=[2, 2]) {
+    let node = document.getElementById('message')
+    if (node) {
+        node.innerHTML = text;
+        node.style.color = color;
+        return;
+    }
     let infoBox = document.createElement('p');
     infoBox.id = 'message';
     document.body.appendChild(infoBox);
     infoBox.style.position = 'absolute';
     infoBox.style.fontSize = '40px';
     infoBox.innerHTML = text;
-    let centerH = window.innerWidth / 2 - infoBox.clientWidth / 2;
-    let centerV = window.innerHeight / 2 - infoBox.clientHeight / 2;
+    let centerH = (window.innerWidth- infoBox.clientWidth) / align[0];
+    let centerV = (window.innerHeight - infoBox.clientHeight) / align[1];
     infoBox.style.left = centerH + 'px';
     infoBox.style.top = centerV + 'px';
     infoBox.style.color = color;
+    infoBox.style.opacity = '1.0';
+    if (flash) {
+        let trigger = false;
+        let s = setInterval(() => {
+            let val = parseFloat(infoBox.style.opacity);
+            if (val <= 0.2) {
+                trigger = true;
+            }
+            else if (val >= 1.0) {
+                trigger = false;
+                val = 0.95;
+            }
+            if (trigger) {
+                infoBox.style.opacity = val + 0.05 + '';
+            } else {
+                infoBox.style.opacity = val - 0.05 + '';
+            }
+            if (!document.getElementById('message')) clearInterval(s);
+        }, 75);
+    }
     window.addEventListener('resize', () => {
         let centerH = window.innerWidth / 2 - infoBox.clientWidth / 2;
         let centerV = window.innerHeight / 2 - infoBox.clientHeight / 2;
@@ -118,14 +142,23 @@ export function showTitle() {
     let title = new THREE.Group();
     let TETRIS = [T1, E, T2, R, I, S];
     let total = [0, 0, 0, 0, 0, 0];
+    let totalRot = [0, 0, 0, 0, 0, 0];
     let direction = [1, -1, 1, -1, 1, -1];
+    let rot = [-1, 1, -1, 1, -1, 1];
     for (let i = 0; i < TETRIS.length; i++) {
-        setInterval(() => {
+        let s = setInterval(() => {
+            if (!TETRIS[i].object3d) clearInterval(s);
             TETRIS[i].object3d.translateY(direction[i] * 0.01);
+            TETRIS[i].object3d.rotateY(rot[i] * 0.001);
             total[i] += 0.01;
             if (total[i] >= 0.3) {
                 total[i] = 0;
                 direction[i] = -direction[i];
+            }
+            totalRot[i] += 0.001;
+            if (totalRot[i] >= 0.05) {
+                totalRot[i] = 0;
+                rot[i] = -rot[i];
             }
         }, Math.random() * 30 + 15);
         TETRIS[i].object3d.translateX(4 * i);
@@ -140,7 +173,6 @@ export function showTitle() {
     showMessage('[Press Space to start]', 0xfff, () => { });
 
     let prev = document.onkeydown;
-
     document.onkeydown = (e) => {
         if (e.keyCode === 32) {
             document.onkeydown = prev;
@@ -149,4 +181,19 @@ export function showTitle() {
             scene.remove(title);
         }
     }
+}
+
+export function showDemo() {
+    if (document.getElementById('demo')) return;
+    let demo = document.createElement('div');
+    demo.id = 'demo';
+    demo.style.position = 'absolute';
+    demo.style.top = '30%';
+    demo.innerHTML = '<img width="130" src="res/demo.gif"/>';
+    document.body.appendChild(demo);
+}
+
+export function hideDemo() {
+    if (!document.getElementById('demo')) return;
+    document.body.removeChild(document.getElementById('demo'));
 }

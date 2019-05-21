@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import { scene } from './Root';
-import { currentBox, history, board } from './logic';
-import { BOARD_SIZE, MAX_LAYERS, MAX_OPACITY, BLOCK_SPEED } from './config';
-import { showInfo } from './ui';
+import { currentBox, history, board, guideSteps } from './logic';
+import { BOARD_SIZE, MAX_LAYERS, MAX_OPACITY, BLOCK_SPEED, newHere, setNewHere } from './config';
+import { showInfo, hideMessage, hideDemo } from './ui';
 
 const R = Math.PI / 2;
 
@@ -198,6 +198,16 @@ export default class Board {
         }
 
         for (let args of rowsToEliminate) {
+            if (newHere) {
+                guideSteps[3] += 1;
+                if (guideSteps[3] === 1) {
+                    hideMessage(() => {});
+                    showInfo('<h1 style="color: #fff">Have fun! Bye!</h1>', 0xfff)
+                    setNewHere(false);
+                    hideDemo();
+                    localStorage.setItem('new-comer', false);
+                }
+            }
             let [layer, index, axis] = args;
             this.history.eliminateRow(layer, index, axis);
             if (axis === 'x') {
@@ -237,6 +247,13 @@ export default class Board {
                 }
             }
             if (eliminatable) {
+                if (newHere) {
+                    guideSteps[3] += 1;
+                    if (guideSteps[3] === 1) {
+                        hideMessage(() => {});
+                        showInfo('<h1 style="color: #fff">Have fun! Bye!</h1>', 0xfff)
+                    }
+                }
                 this.history.eliminate(j);
                 this.matrix.splice(j, 1);
                 this.colorMatrix.splice(j, 1);

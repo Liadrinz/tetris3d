@@ -27,7 +27,7 @@ if (process.argv[2] === 'run') {
         } else {
             console.log(data);
             console.log('Build done!');
-            run();
         }
     });
+    run();
 }
