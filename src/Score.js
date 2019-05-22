@@ -6,7 +6,7 @@ export function addScore(score) {
     vueApp.addScore(score);
 }
 
-export function clearScore(score) {
+export function clearScore() {
     board.score = 0;
     vueApp.setScore(0);
 }

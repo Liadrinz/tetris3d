@@ -3,12 +3,16 @@ import { board } from './logic';
 import { newHere } from './config';
 import { guideSteps } from './logic';
 import { showInfo, hideMessage } from './ui';
+import Block from './Block';
 
 const R = Math.PI / 2;
 
 /**
- * axis: 0=x, 1=y, 2=z
- * direction: 1=counterclockwise, -1=clockwise
+ * Rotate the position infomation of a block.
+ * @param {Block} block The target object.
+ * @param {Number} 0: x, 1: y, 2: z
+ * @param {Number} direction 1: Counter-clockwise, -1: Clockwise.
+ * @param {function} callback (err: Boolean)
  */
 function rotateBlockPositions(block, axis, direction, callback = (err) => { }) {
     let dim = [];
@@ -26,6 +30,7 @@ function rotateBlockPositions(block, axis, direction, callback = (err) => { }) {
         [vector[0], vector[1]] = [-direction * vector[1], direction * vector[0]];  // rotate
         [cube[0], cube[1]] = [vector[0] + center[0], vector[1] + center[1]];
 
+        // simple transformation on a surface
         let [resI, resJ] = [cube[0] - 0.5, cube[1] - 0.5];
         let cubeX, cubeY, cubeZ;
         if (axis === 0) {
@@ -42,6 +47,7 @@ function rotateBlockPositions(block, axis, direction, callback = (err) => { }) {
             cubeZ = parseInt(block.object3d.position.z - block.center[2] + position[2]);
         }
 
+        // overflow detection
         if (cubeX < 0) {
             board.overflowShow('left');
             callback(true);
@@ -69,6 +75,8 @@ function rotateBlockPositions(block, axis, direction, callback = (err) => { }) {
             return;
         }
     }
+
+    // change position information
     let idx = 0;
     for (let position of block.positions) {
         [position[dim[0]], position[dim[1]]] = cache[idx++];

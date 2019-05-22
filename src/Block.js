@@ -6,14 +6,20 @@ import { BOARD_SIZE, BLOCK_SPEED, INIT_BLOCK_Y } from './config';
 import { showInfo } from './ui';
 
 export default class Block {
+    /**
+     * 
+     * @param {Array} positions Array 2D, showing which positions have a block.
+     * @param {Array} center The rotation center of the whole block.
+     * @param {Number} color hex rgb.
+     */
     constructor(positions, center, color) {
         this.boardSize = BOARD_SIZE;
         this.positions = positions;
         this.center = center;
         this.color = color;
         this.state = {
-            originalSpeed: BLOCK_SPEED,
-            speed: BLOCK_SPEED,
+            originalSpeed: BLOCK_SPEED,  // the normal speed of this block
+            speed: BLOCK_SPEED,  // current speed of this block
             shown: false,
             readyToSettle: false,
             settled: false,
@@ -24,6 +30,7 @@ export default class Block {
         this.object3d = new THREE.Group();
         this.object3d.position.set(...center);
 
+        // building block
         for (let position of positions) {
             let [x, y, z] = position;
             let cube = new THREE.Mesh(
@@ -49,6 +56,7 @@ export default class Block {
         return [cubeX, cubeY, cubeZ];
     }
 
+    // if there is collision when moving on x and z
     _collisionXZ(direction) {
         for (let position of this.positions) {
             let [cubeX, cubeY, cubeZ] = this.getCubeMatrixIndex(position);
@@ -85,6 +93,7 @@ export default class Block {
         return false;
     }
 
+    // if there is collision on y
     _collisionY() {
         for (let position of this.positions) {
             let [cubeX, cubeY, cubeZ] = this.getCubeMatrixIndex(position);
@@ -95,6 +104,7 @@ export default class Block {
         return false;
     }
 
+    // called each frame, updating the state of the block
     update() {
         if (this.state.paused) {
             this.state.settled = false;

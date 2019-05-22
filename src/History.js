@@ -2,10 +2,13 @@ import * as THREE from 'three';
 import { scene } from './Root';
 import { addScore } from './Score';
 import { BOARD_SIZE, BLOCK_SPEED } from './config';
-import { currentBox } from './logic';
 import { showInfo } from './ui';
 import { freeDrop } from './Physical';
+import Block from './Block';
 
+/**
+ * To record blocks having been dropped to the board.
+ */
 export default class History {
     constructor() {
         this.boardSize = BOARD_SIZE;
@@ -43,6 +46,10 @@ export default class History {
         this._init();
     }
 
+    /**
+     * remove the single block from the scene, and add it to the history.
+     * @param {Block} block The block to be written into history.
+     */
     write(block) {
         this.prevBlock = block;
         scene.remove(block.object3d);
@@ -64,6 +71,12 @@ export default class History {
         }
     }
 
+    /**
+     * eliminate one row (column) in history.
+     * @param {Number} layer Which layer.
+     * @param {Number} index Which row (column).
+     * @param {String} axis 'x' or 'z'.
+     */
     eliminateRow(layer, index, axis = 'z') {
         if (axis === 'z') {
             for (let i = 0; i < this.boardSize.x; i++) {
@@ -98,6 +111,10 @@ export default class History {
         addScore(parseInt(10 * Math.pow(this.prevBlock.state.originalSpeed / BLOCK_SPEED, 2)));
     }
 
+    /**
+     * eliminate one whole layer in history.
+     * @param {Number} layer Which layer.
+     */
     eliminate(layer) {
         for (let i = 0; i < this.boardSize.x; i++) {
             for (let k = 0; k < this.boardSize.z; k++) {

@@ -7,6 +7,7 @@ import { themes } from './config';
 
 var conf = require('./config');
 
+// the vue app
 export let vueApp = new Vue({
     el: '#vue-app',
     data: function () {

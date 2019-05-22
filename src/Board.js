@@ -14,6 +14,8 @@ export default class Board {
             fadeStop: false,
             showStop: false
         }
+
+        // build walls
         this.leftMaterial = new THREE.MeshPhongMaterial({ color: 0xa0a0a0, opacity: 0.0, transparent: true });
         let leftWall = new THREE.Mesh(
             new THREE.PlaneBufferGeometry(this.size.z, this.size.y),
@@ -49,6 +51,7 @@ export default class Board {
         backWall.translateY(parseInt(BOARD_SIZE.y / 2));
         backWall.translateZ(BOARD_SIZE.z + 0.02);
         scene.add(leftWall, rightWall, frontWall, backWall);
+
         this._init(history);
     }
 
@@ -56,6 +59,8 @@ export default class Board {
         this.score = 0;
         this.history = history;
         this.object3d = new THREE.Group();
+
+        // the board receiving blocks
         var plane = new THREE.Mesh(
             new THREE.PlaneBufferGeometry(this.size.x, this.size.z),
             new THREE.MeshPhongMaterial({ color: 0xa0a0a0 })
@@ -64,9 +69,12 @@ export default class Board {
         plane.receiveShadow = true;
         plane.position.set(parseInt(this.size.x / 2), 0, parseInt(this.size.z / 2));
         this.object3d.add(plane);
+
         scene.add(this.object3d);
-        this.matrix = [];
-        this.colorMatrix = [];
+        
+        // initialize some matrixes
+        this.matrix = [];  // 0-1 matrix, showing which positions have a block
+        this.colorMatrix = [];  // Number matrix, showing the color of each position. -1 if no block in this position.
         for (let j = 0; j < this.size.y; j++) {
             let pane = [];
             let colorPane = [];
@@ -85,6 +93,7 @@ export default class Board {
         }
     }
 
+    // show walls when overflow
     overflowShow(direction) {
         showInfo('Stucked!', '#fff');
         this.state.showStop = false;
@@ -163,6 +172,7 @@ export default class Board {
     eliminateCheck() {
         let rowsToEliminate = [];
 
+        // collect rows to be eliminated on axis z
         for (let j = 0; j < this.size.y; j++) {
             for (let i = 0; i < this.size.x; i++) {
                 let equals = true, prev = this.colorMatrix[j][i][0];
@@ -180,6 +190,7 @@ export default class Board {
             }
         }
 
+        // collect rows to be eliminated on axis x
         for (let j = 0; j < this.size.y; j++) {
             for (let k = 0;  k < this.size.z; k++) {
                 let equals = true, prev = this.colorMatrix[j][0][k];
@@ -197,7 +208,9 @@ export default class Board {
             }
         }
 
+        // eliminate rows collected
         for (let args of rowsToEliminate) {
+            // the player is a new comer
             if (newHere) {
                 guideSteps[3] += 1;
                 if (guideSteps[3] === 1) {
