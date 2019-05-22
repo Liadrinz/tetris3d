@@ -1,6 +1,10 @@
 # tetris3d
 
 
+### 消除效果
+
+![image text](https://github.com/Liadrinz/tetris3d/blob/master/public/res/demo.gif)
+
 ### 本地运行
 
 打开public/index.html
@@ -31,7 +35,8 @@ A D 左右移动方块 <br>
 
 #### 消除
 
-填满一个与棋盘平行的面即可消除该面
+1. 填满一个与棋盘平行的面即可消除该面
+2. 凑齐颜色相同的一行即可消除该行
 
 
 #### 游戏结束
