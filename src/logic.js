@@ -1,6 +1,6 @@
 import { blockControl } from './events';
 import { renderer, scene, camera } from './Root';
-import { showMessage, hideMessage, showTitle, showInfo, showDemo } from './ui';
+import { showMessage, hideMessage, showTitle, showDemo } from './ui';
 import Board from './Board';
 import Block from './Block';
 import History from './History';
@@ -21,6 +21,7 @@ export let currentBox = new Array(1);  // a space containing the current block
 blockControl(currentBox);
 
 // to control something that should only be done finite times
+export let title = null;
 let titleShown = false;
 let reset = false;
 export let guideSteps = [-4, -9, 0, 0];
@@ -33,9 +34,12 @@ export default function loop() {
     /** logic start */
 
     // before start
-    if (!vueApp.started) {
+    if (!vueApp.game) {
+        
         if (!titleShown) {
-            showTitle();
+            showTitle((obj) => {
+                title = obj;
+            });
             titleShown = true;
         }
         return;

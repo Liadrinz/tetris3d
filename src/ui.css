@@ -39,3 +39,21 @@
 #vue-app {
     position: absolute;
 }
+
+#menu {
+    display: inline-block;
+    position: absolute;
+    color: #ddd;
+    font-size: 50px;
+    font-weight: bolder;
+}
+
+#menu p:hover {
+    color: #fff;
+    font-size: 57px;
+    transition: all 0.2s;
+}
+
+#menu p {
+    margin: 15px;
+}

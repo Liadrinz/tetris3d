@@ -15,7 +15,7 @@
 
 <body>
     <div id="vue-app" v-cloak>
-        <div v-show="started">
+        <div v-show="started && game">
             <div id="score-box">
                 Score {{score}}
             </div>
@@ -24,6 +24,13 @@
                     @click="pauseOrPlay"></i>
                 <i id="theme-button" style="font-size: 50px; font-weight: bold;" class="el-icon-sunny"
                     @click="switchTheme"></i>
+            </div>
+        </div>
+        <div v-show="!started">
+            <div id="menu">
+                <p @click="startGame">START</p>
+                <p @click="startWorkshop">WORKSHOP</p>
+                <p @click="startSettings">SETTINGS</p>
             </div>
         </div>
     </div>

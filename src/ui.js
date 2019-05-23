@@ -107,7 +107,7 @@ export function loadControlBar() {
     document.body.appendChild(bar);
 }
 
-export function showTitle() {
+export function showTitle(callback = (title) => {}) {
     let T1 = new Block(
         [[0, 3, 0], [1, 3, 0], [2, 3, 0], [1, 2, 0], [1, 1, 0], [1, 0, 0]],
         [0, 0, 0],
@@ -169,18 +169,7 @@ export function showTitle() {
     title.rotateY(Math.PI / 4);
     title.translateX(-12);
     scene.add(title);
-
-    showMessage('[Press Space to start]', 0xfff, () => { });
-
-    let prev = document.onkeydown;
-    document.onkeydown = (e) => {
-        if (e.keyCode === 32) {
-            document.onkeydown = prev;
-            hideMessage(() => {});
-            vueApp.started = true;
-            scene.remove(title);
-        }
-    }
+    callback(title);
 }
 
 export function showDemo() {
