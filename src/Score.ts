@@ -1,7 +1,7 @@
 import { vueApp } from './main';
 import { board } from './logic';
 
-export function addScore(score) {
+export function addScore(score: number) {
     board.score += score;
     vueApp.addScore(score);
 }

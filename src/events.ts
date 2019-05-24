@@ -4,6 +4,7 @@ import { newHere } from './config';
 import { guideSteps } from './logic';
 import { showInfo, hideMessage } from './ui';
 import Block from './Block';
+import { vueApp } from './main';
 
 const R = Math.PI / 2;
 
@@ -14,7 +15,7 @@ const R = Math.PI / 2;
  * @param {Number} direction 1: Counter-clockwise, -1: Clockwise.
  * @param {function} callback (err: Boolean)
  */
-function rotateBlockPositions(block, axis, direction, callback = (err) => { }) {
+function rotateBlockPositions(block: Block, axis: number, direction: number, callback: Function = (err: boolean) => { }) {
     let dim = [];
     for (let i = 0; i < 3; i++) {
         if (i === axis) {
@@ -34,17 +35,17 @@ function rotateBlockPositions(block, axis, direction, callback = (err) => { }) {
         let [resI, resJ] = [cube[0] - 0.5, cube[1] - 0.5];
         let cubeX, cubeY, cubeZ;
         if (axis === 0) {
-            cubeX = parseInt(block.object3d.position.x - block.center[0] + position[0]);
-            cubeY = parseInt(block.object3d.position.y - block.center[1] + resI);
-            cubeZ = parseInt(block.object3d.position.z - block.center[2] + resJ);
+            cubeX = parseInt((block.object3d.position.x - block.center[0] + position[0]).toString());
+            cubeY = parseInt((block.object3d.position.y - block.center[1] + resI).toString());
+            cubeZ = parseInt((block.object3d.position.z - block.center[2] + resJ).toString());
         } else if (axis === 1) {
-            cubeX = parseInt(block.object3d.position.x - block.center[0] + resI);
-            cubeY = parseInt(block.object3d.position.y - block.center[1] + position[1]);
-            cubeZ = parseInt(block.object3d.position.z - block.center[2] + resJ);
+            cubeX = parseInt((block.object3d.position.x - block.center[0] + resI).toString());
+            cubeY = parseInt((block.object3d.position.y - block.center[1] + position[1]).toString());
+            cubeZ = parseInt((block.object3d.position.z - block.center[2] + resJ).toString());
         } else {
-            cubeX = parseInt(block.object3d.position.x - block.center[0] + resI);
-            cubeY = parseInt(block.object3d.position.y - block.center[1] + resJ);
-            cubeZ = parseInt(block.object3d.position.z - block.center[2] + position[2]);
+            cubeX = parseInt((block.object3d.position.x - block.center[0] + resI).toString());
+            cubeY = parseInt((block.object3d.position.y - block.center[1] + resJ).toString());
+            cubeZ = parseInt((block.object3d.position.z - block.center[2] + position[2]).toString());
         }
 
         // overflow detection
@@ -84,8 +85,9 @@ function rotateBlockPositions(block, axis, direction, callback = (err) => { }) {
     callback(false);
 }
 
-export function blockControl(currentBox) {
+export function blockControl(currentBox: Array<Block>) {
     document.onkeydown = (e) => {
+        if (vueApp.game === false) return;
         if (newHere) {
             if (guideSteps[0] <= 0 && (e.keyCode > 36 && e.keyCode < 41 || e.keyCode === 188 || e.keyCode === 190)) return;
             if (guideSteps[1] <= 0 && e.keyCode === 32) return;
@@ -113,9 +115,9 @@ export function blockControl(currentBox) {
                         showInfo('<h1 style="color: #fff">Voila!</h1>', 0xfff);
                     }
                 }
-                let intervalEvent = null, count = 0;
+                let intervalEvent: Function = null, count = 0;
                 if (e.keyCode === 37) {
-                    rotateBlockPositions(block, 1, 1, (err) => {
+                    rotateBlockPositions(block, 1, 1, (err: boolean) => {
                         if (!err) {
                             intervalEvent = () => {
                                 block.object3d.rotateY(-R * 0.2);
@@ -123,7 +125,7 @@ export function blockControl(currentBox) {
                         }
                     });
                 } else if (e.keyCode === 38) {
-                    rotateBlockPositions(block, 0, -1, (err) => {
+                    rotateBlockPositions(block, 0, -1, (err: boolean) => {
                         if (!err) {
                             intervalEvent = () => {
                                 block.object3d.rotateX(-R * 0.2);
@@ -131,7 +133,7 @@ export function blockControl(currentBox) {
                         }
                     });
                 } else if (e.keyCode === 39) {
-                    rotateBlockPositions(block, 1, -1, (err) => {
+                    rotateBlockPositions(block, 1, -1, (err: boolean) => {
                         if (!err) {
                             intervalEvent = () => {
                                 block.object3d.rotateY(R * 0.2);
@@ -139,7 +141,7 @@ export function blockControl(currentBox) {
                         }
                     });
                 } else if (e.keyCode === 40) {
-                    rotateBlockPositions(block, 0, 1, (err) => {
+                    rotateBlockPositions(block, 0, 1, (err: boolean) => {
                         if (!err) {
                             intervalEvent = () => {
                                 block.object3d.rotateX(R * 0.2);
@@ -147,7 +149,7 @@ export function blockControl(currentBox) {
                         }
                     });
                 } else if (e.keyCode === 188) {
-                    rotateBlockPositions(block, 2, 1, (err) => {
+                    rotateBlockPositions(block, 2, 1, (err: boolean) => {
                         if (!err) {
                             intervalEvent = () => {
                                 block.object3d.rotateZ(R * 0.2)
@@ -155,7 +157,7 @@ export function blockControl(currentBox) {
                         }
                     });
                 } else if (e.keyCode === 190) {
-                    rotateBlockPositions(block, 2, -1, (err) => {
+                    rotateBlockPositions(block, 2, -1, (err: boolean) => {
                         if (!err) {
                             intervalEvent = () => {
                                 block.object3d.rotateZ(-R * 0.2);

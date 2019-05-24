@@ -3,8 +3,7 @@ import './main.css';
 import { scene } from './Root';
 import { Color } from 'three';
 import { themes } from './config';
-
-var conf = require('./config');
+import * as conf from './config';
 
 // the vue app
 export let vueApp = new Vue({
@@ -24,13 +23,13 @@ export let vueApp = new Vue({
 
     mounted() {
         let menu = document.getElementById('menu');
-        menu.style.left = parseInt((window.innerWidth - menu.clientWidth) / 2) + 'px';
-        menu.style.top = parseInt((window.innerHeight - menu.clientHeight) / 5 * 4) + 'px';
+        menu.style.left = parseInt(((window.innerWidth - menu.clientWidth) / 2).toString()) + 'px';
+        menu.style.top = parseInt(((window.innerHeight - menu.clientHeight) / 5 * 4).toString()) + 'px';
         document.getElementById('theme-button').className = conf.theme.button;
         document.getElementsByClassName('control-bar')[0].style.left = window.innerWidth - 100 + 'px';
         window.addEventListener('resize', function () {
-            menu.style.left = parseInt((window.innerWidth - menu.clientWidth) / 2) + 'px';
-            menu.style.top = parseInt((window.innerHeight - menu.clientHeight) / 5 * 4) + 'px';
+            menu.style.left = parseInt(((window.innerWidth - menu.clientWidth) / 2).toString()) + 'px';
+            menu.style.top = parseInt(((window.innerHeight - menu.clientHeight) / 5 * 4).toString()) + 'px';
             document.getElementsByClassName('control-bar')[0].style.left = window.innerWidth - 100 + 'px';
         });
     },
@@ -43,11 +42,13 @@ export let vueApp = new Vue({
         },
 
         startWorkshop() {
-
+            this.started = true;
+            this.workshop = true;
         },
 
         startSettings() {
-
+            this.started = true;
+            this.settings = true;
         },
 
         addScore(score) {
@@ -56,6 +57,16 @@ export let vueApp = new Vue({
 
         setScore(score) {
             this.score = score;
+        },
+
+        back() {
+            this.started = false;
+            if (this.game) {
+                this.game = false;
+                scene.add(title);
+            }
+            this.workshop = false;
+            this.settings = false;
         },
 
         pauseOrPlay() {

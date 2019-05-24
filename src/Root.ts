@@ -2,15 +2,15 @@ import * as THREE from 'three';
 import { CAMERA_POSITION, CAMERA_LOOK_AT, theme } from './config';
 
 var container;
-var camera, scene, renderer, light;
+var camera: THREE.PerspectiveCamera, scene: THREE.Scene, renderer: THREE.WebGLRenderer, light: THREE.DirectionalLight;
 
 var init = function () {
     container = document.createElement('div');
     document.body.appendChild(container);
 
     camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 2000);
-    camera.position.set(...CAMERA_POSITION);
-    camera.lookAt(...CAMERA_LOOK_AT);
+    camera.position.set(CAMERA_POSITION[0], CAMERA_POSITION[1], CAMERA_POSITION[2]);
+    camera.lookAt(CAMERA_LOOK_AT[0], CAMERA_LOOK_AT[1], CAMERA_LOOK_AT[2]);
 
     scene = new THREE.Scene();
 

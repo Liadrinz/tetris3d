@@ -1,14 +1,31 @@
 import * as THREE from 'three';
 import { scene } from './Root';
 import { currentBox, history, board, guideSteps } from './logic';
-import { BOARD_SIZE, MAX_LAYERS, MAX_OPACITY, BLOCK_SPEED, newHere, setNewHere } from './config';
+import { BOARD_SIZE, MAX_LAYERS, MAX_OPACITY, BLOCK_SPEED, newHere, setNewHere, BoardSize } from './config';
 import { showInfo, hideMessage, hideDemo } from './ui';
+import History from './History';
 
 const R = Math.PI / 2;
 
+export interface BoardState {
+    fadeStop: boolean,
+    showStop: boolean
+}
+
 // only one Board instance in a game
 export default class Board {
-    constructor(history) {
+    size: BoardSize;
+    state: BoardState;
+    leftMaterial: THREE.MeshPhongMaterial;
+    rightMaterial: THREE.MeshPhongMaterial;
+    frontMaterial: THREE.MeshPhongMaterial;
+    backMaterial: THREE.MeshPhongMaterial;
+    score: number;
+    history: History;
+    object3d: THREE.Object3D;
+    matrix: Array<Array<Array<number>>>;
+    colorMatrix: Array<Array<Array<number>>>;
+    constructor(history: History) {
         this.size = BOARD_SIZE;
         this.state = {
             fadeStop: false,
@@ -22,8 +39,8 @@ export default class Board {
             this.leftMaterial
         );
         leftWall.translateX(-0.02);
-        leftWall.translateY(parseInt(BOARD_SIZE.y / 2));
-        leftWall.translateZ(parseInt(BOARD_SIZE.z / 2));
+        leftWall.translateY(parseInt((BOARD_SIZE.y / 2).toString()));
+        leftWall.translateZ(parseInt((BOARD_SIZE.z / 2).toString()));
         leftWall.rotateY(R);
         this.rightMaterial = new THREE.MeshPhongMaterial({ color: 0xa0a0a0, opacity: 0.0, transparent: true });
         let rightWall = new THREE.Mesh(
@@ -31,31 +48,31 @@ export default class Board {
             this.rightMaterial
         );
         rightWall.translateX(BOARD_SIZE.x + 0.02);
-        rightWall.translateY(parseInt(BOARD_SIZE.y / 2));
-        rightWall.translateZ(parseInt(BOARD_SIZE.z / 2));
+        rightWall.translateY(parseInt((BOARD_SIZE.y / 2).toString()));
+        rightWall.translateZ(parseInt((BOARD_SIZE.z / 2).toString()));
         rightWall.rotateY(R);
         this.frontMaterial = new THREE.MeshPhongMaterial({ color: 0xa0a0a0, opacity: 0.0, transparent: true });
         let frontWall = new THREE.Mesh(
             new THREE.PlaneBufferGeometry(this.size.x, this.size.y),
             this.frontMaterial
         );
-        frontWall.translateX(parseInt(BOARD_SIZE.x / 2));
-        frontWall.translateY(parseInt(BOARD_SIZE.y / 2));
+        frontWall.translateX(parseInt((BOARD_SIZE.x / 2).toString()));
+        frontWall.translateY(parseInt((BOARD_SIZE.y / 2).toString()));
         frontWall.translateZ(-0.02)
         this.backMaterial = new THREE.MeshPhongMaterial({ color: 0xa0a0a0, opacity: 0.0, transparent: true });
         let backWall = new THREE.Mesh(
             new THREE.PlaneBufferGeometry(this.size.x, this.size.y),
             this.backMaterial
         );
-        backWall.translateX(parseInt(BOARD_SIZE.x / 2));
-        backWall.translateY(parseInt(BOARD_SIZE.y / 2));
+        backWall.translateX(parseInt((BOARD_SIZE.x / 2).toString()));
+        backWall.translateY(parseInt((BOARD_SIZE.y / 2).toString()));
         backWall.translateZ(BOARD_SIZE.z + 0.02);
         scene.add(leftWall, rightWall, frontWall, backWall);
 
         this._init(history);
     }
 
-    _init(history) {
+    _init(history: History) {
         this.score = 0;
         this.history = history;
         this.object3d = new THREE.Group();
@@ -67,7 +84,7 @@ export default class Board {
         );
         plane.rotation.x = - Math.PI / 2;
         plane.receiveShadow = true;
-        plane.position.set(parseInt(this.size.x / 2), 0, parseInt(this.size.z / 2));
+        plane.position.set(parseInt((this.size.x / 2).toString()), 0, parseInt((this.size.z / 2).toString()));
         this.object3d.add(plane);
 
         scene.add(this.object3d);
@@ -94,7 +111,7 @@ export default class Board {
     }
 
     // show walls when overflow
-    overflowShow(direction) {
+    overflowShow(direction: string) {
         showInfo('Stucked!', '#fff');
         this.state.showStop = false;
         this.state.fadeStop = true;
@@ -129,7 +146,7 @@ export default class Board {
         }
     }
 
-    overflowFade(direction) {
+    overflowFade(direction: string) {
         let s;
         this.state.fadeStop = false;
         this.state.showStop = true;
@@ -164,13 +181,13 @@ export default class Board {
         }
     }
 
-    reset(history) {
+    reset(history: History) {
         scene.remove(this.object3d);
         this._init(history);
     }
 
     eliminateCheck() {
-        let rowsToEliminate = [];
+        let rowsToEliminate: Array<Array<string|number>> = [];
 
         // collect rows to be eliminated on axis z
         for (let j = 0; j < this.size.y; j++) {
@@ -185,7 +202,7 @@ export default class Board {
                     }
                 }
                 if (equals) {
-                    rowsToEliminate.push([j, i, 'x']);
+                    rowsToEliminate.push([j.toString(), i.toString(), 'x']);
                 }
             }
         }
@@ -203,7 +220,7 @@ export default class Board {
                     }
                 }
                 if (equals) {
-                    rowsToEliminate.push([j, k, 'z']);
+                    rowsToEliminate.push([j.toString(), k.toString(), 'z']);
                 }
             }
         }
@@ -218,10 +235,13 @@ export default class Board {
                     showInfo('<h1 style="color: #fff">Have fun! Bye!</h1>', 0xfff)
                     setNewHere(false);
                     hideDemo();
-                    localStorage.setItem('new-comer', false);
+                    localStorage.setItem('new-comer', 'false');
                 }
             }
             let [layer, index, axis] = args;
+            layer = parseInt(layer.toString());
+            index = parseInt(index.toString());
+            axis = axis.toString();
             this.history.eliminateRow(layer, index, axis);
             if (axis === 'x') {
                 for (let k = 0; k < this.size.z; k++) {

@@ -7,7 +7,7 @@
  * @param {Boolean} withBounce 落到终点是否弹跳
  * @param {Number} bounceTimes 弹跳次数
  */
-export function freeDrop(object3d, dy, frames=100, accelerate=1, withBounce=true, bounceTimes=2) {
+export function freeDrop(object3d: THREE.Object3D, dy: number, frames=100, accelerate=1, withBounce=true, bounceTimes=2) {
     if (bounceTimes === 0) {
         object3d.translateY(-dy);
         return;

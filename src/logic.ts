@@ -8,20 +8,20 @@ import { theme, shapes, newHere } from './config';
 import { vueApp } from './main';
 
 function getRandomShape() {
-    return shapes[parseInt(Math.random() * shapes.length)];
+    return shapes[parseInt((Math.random() * shapes.length).toString())];
 }
 
-export let history = new History();
+export let history: History = new History();
 
 export let board = new Board(history);
 
-let block = null;
+let block: Block = null;
 export let currentBox = new Array(1);  // a space containing the current block
 
 blockControl(currentBox);
 
 // to control something that should only be done finite times
-export let title = null;
+export let title: THREE.Object3D = null;
 let titleShown = false;
 let reset = false;
 export let guideSteps = [-4, -9, 0, 0];
@@ -91,7 +91,7 @@ export default function loop() {
                 history.write(block);
                 board.eliminateCheck();
             }
-            block = new Block(shape.mat, shape.center, theme.blockColors[parseInt(Math.random() * theme.blockColors.length)]);
+            block = new Block(shape.mat, shape.center, theme.blockColors[parseInt((Math.random() * theme.blockColors.length).toString())]);
             if (guideSteps[1] <= 0)
                 block.state.speed = 0;
             currentBox[0] = block;
@@ -103,7 +103,7 @@ export default function loop() {
                 speed = block.state.originalSpeed;
             }
             let shape = getRandomShape();
-            block = new Block(shape.mat, shape.center, theme.blockColors[parseInt(Math.random() * theme.blockColors.length)]);
+            block = new Block(shape.mat, shape.center, theme.blockColors[parseInt((Math.random() * theme.blockColors.length).toString())]);
             if (speed) {
                 block.state.originalSpeed = speed * 1.005;
                 block.state.speed = speed * 1.005;

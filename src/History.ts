@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { scene } from './Root';
 import { addScore } from './Score';
-import { BOARD_SIZE, BLOCK_SPEED } from './config';
+import { BOARD_SIZE, BLOCK_SPEED, BoardSize } from './config';
 import { showInfo } from './ui';
 import { freeDrop } from './Physical';
 import Block from './Block';
@@ -10,6 +10,10 @@ import Block from './Block';
  * To record blocks having been dropped to the board.
  */
 export default class History {
+    boardSize: BoardSize;
+    prevBlock: Block;
+    _dict: Array<Array<Array<THREE.Object3D>>>;
+    object3d: THREE.Object3D;
     constructor() {
         this.boardSize = BOARD_SIZE;
         this._init();
@@ -50,17 +54,22 @@ export default class History {
      * remove the single block from the scene, and add it to the history.
      * @param {Block} block The block to be written into history.
      */
-    write(block) {
+    write(block: Block) {
         this.prevBlock = block;
         scene.remove(block.object3d);
         for (let position of block.positions) {
             let [cubeX, cubeY, cubeZ] = block.getCubeMatrixIndex(position);
             let cubeWithBorder = new THREE.Group();
+            let boxGeometry = new THREE.BoxGeometry(1, 1, 1)
             let cube = new THREE.Mesh(
-                new THREE.BoxGeometry(1, 1, 1),
+                boxGeometry,
                 new THREE.MeshLambertMaterial({ color: block.color })
             );
-            let border = new THREE.EdgesHelper(cube, 0xc0c0c0);
+            let borderGeometry = new THREE.EdgesGeometry(boxGeometry, 1);
+            let border = new THREE.LineSegments(
+                borderGeometry,
+                new THREE.LineBasicMaterial({color: 0xc0c0c0})
+            );
             cube.position.set(cubeX + 0.5, cubeY + 0.5, cubeZ + 0.5);
             cube.castShadow = true;
             cube.receiveShadow = true;
@@ -77,7 +86,7 @@ export default class History {
      * @param {Number} index Which row (column).
      * @param {String} axis 'x' or 'z'.
      */
-    eliminateRow(layer, index, axis = 'z') {
+    eliminateRow(layer: number, index: number, axis: string = 'z') {
         if (axis === 'z') {
             for (let i = 0; i < this.boardSize.x; i++) {
                 this.object3d.remove(this._dict[layer][i][index]);
@@ -107,15 +116,15 @@ export default class History {
                 }
             }
         }
-        showInfo('<p style="font-size: 40px; padding-top: 50px;">+' + parseInt(10 * Math.pow(this.prevBlock.state.originalSpeed / BLOCK_SPEED, 2)) + '</p>', '#79d0a4');
-        addScore(parseInt(10 * Math.pow(this.prevBlock.state.originalSpeed / BLOCK_SPEED, 2)));
+        showInfo('<p style="font-size: 40px; padding-top: 50px;">+' + parseInt((10 * Math.pow(this.prevBlock.state.originalSpeed / BLOCK_SPEED, 2)) + '</p>').toString(), '#79d0a4');
+        addScore(parseInt((10 * Math.pow(this.prevBlock.state.originalSpeed / BLOCK_SPEED, 2)).toString()));
     }
 
     /**
      * eliminate one whole layer in history.
      * @param {Number} layer Which layer.
      */
-    eliminate(layer) {
+    eliminate(layer: number) {
         for (let i = 0; i < this.boardSize.x; i++) {
             for (let k = 0; k < this.boardSize.z; k++) {
                 this.object3d.remove(this._dict[layer][i][k]);
@@ -133,7 +142,7 @@ export default class History {
                 }
             }
         }
-        showInfo('<p style="font-size: 60px; padding-top: 50px;">+' + parseInt(100 * Math.pow(this.prevBlock.state.originalSpeed / BLOCK_SPEED, 2)) + '</p>', '#cc3388');
-        addScore(parseInt(100 * Math.pow(this.prevBlock.state.originalSpeed / BLOCK_SPEED, 2)));
+        showInfo('<p style="font-size: 60px; padding-top: 50px;">+' + parseInt((100 * Math.pow(this.prevBlock.state.originalSpeed / BLOCK_SPEED, 2)) + '</p>').toString(), '#cc3388');
+        addScore(parseInt((100 * Math.pow(this.prevBlock.state.originalSpeed / BLOCK_SPEED, 2)).toString()));
     }
 }

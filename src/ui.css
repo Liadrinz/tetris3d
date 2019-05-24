@@ -8,32 +8,23 @@
     color: #fff;
 }
 
-#pause-button {
+.button {
     display: inline-block;
     color: #fff;
     cursor: pointer;
     padding: 10px;
-}
-
-#theme-button {
-    display: inline-block;
-    color: #fff;
-    cursor: pointer;
-    padding: 10px;
+    font-size: 50px;
+    font-weight: bolder;
 }
 
 #score-box {
     display: inline-block;
     position: absolute;
     left: 25px;
-    top: 30px;
+    top: 75px;
     background: rgba(0, 0, 0, 0);
     font-size: 30px;
     color: #ffffff;
-}
-
-#score {
-    display: inline-block;
 }
 
 #vue-app {
@@ -43,15 +34,16 @@
 #menu {
     display: inline-block;
     position: absolute;
-    color: #ddd;
+    color: #ff8585;
     font-size: 50px;
     font-weight: bolder;
+    transition: all 0.5s;
 }
 
 #menu p:hover {
-    color: #fff;
+    color: #ff8762;
     font-size: 57px;
-    transition: all 0.2s;
+    transition: all 0.5s;
 }
 
 #menu p {
