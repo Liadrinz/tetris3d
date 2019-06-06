@@ -1,0 +1,19 @@
+[
+    {
+        "levelNum": 1,
+        "levelInfo": {
+            "initSpeed": 0.002,
+            "speedRate": 1.01,
+            "targetScore": 500
+        },
+        "barriers": [
+            {
+                "barrierInfo": {
+                    "layer": 5,
+                    "matrix": [[0, 0], [0, 1], [1, 0], [1, 1]]
+                },
+                "reverse": true
+            }
+        ]
+    }
+]

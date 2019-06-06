@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { scene } from './Root';
-import { board } from './logic';
+import { currentLevel } from './logic';
 import { addScore } from './Score';
 import { BOARD_SIZE, BLOCK_SPEED, INIT_BLOCK_Y, BoardSize } from './config';
 import { showInfo } from './ui';
@@ -79,31 +79,31 @@ export default class Block {
             let [cubeX, cubeY, cubeZ] = this.getCubeMatrixIndex(position);
             if (direction === 'left') {
                 if (cubeX <= 0) {
-                    board.overflowShow('left');
+                    currentLevel.board.overflowShow('left');
                     return true;
                 }
-                if (board.matrix[cubeY][cubeX - 1][cubeZ])
+                if (currentLevel.board.matrix[cubeY][cubeX - 1][cubeZ] || currentLevel.board.barrierMatrix[cubeY + 1][cubeX - 1][cubeZ])
                     return true;
             } else if (direction === 'up') {
                 if (cubeZ <= 0) {
-                    board.overflowShow('up');
+                    currentLevel.board.overflowShow('up');
                     return true;
                 }
-                if (board.matrix[cubeY][cubeX][cubeZ - 1])
+                if (currentLevel.board.matrix[cubeY][cubeX][cubeZ - 1] || currentLevel.board.barrierMatrix[cubeY + 1][cubeX][cubeZ - 1])
                     return true;
             } else if (direction === 'right') {
                 if (cubeX >= this.boardSize.x - 1) {
-                    board.overflowShow('right')
+                    currentLevel.board.overflowShow('right')
                     return true;
                 }
-                if (board.matrix[cubeY][cubeX + 1][cubeZ])
+                if (currentLevel.board.matrix[cubeY][cubeX + 1][cubeZ] || currentLevel.board.barrierMatrix[cubeY + 1][cubeX + 1][cubeZ])
                     return true;
             } else if (direction === 'down') {
                 if (cubeZ >= this.boardSize.z - 1) {
-                    board.overflowShow('down');
+                    currentLevel.board.overflowShow('down');
                     return true;
                 }
-                if (board.matrix[cubeY][cubeX][cubeZ + 1])
+                if (currentLevel.board.matrix[cubeY][cubeX][cubeZ + 1] || currentLevel.board.barrierMatrix[cubeY + 1][cubeX][cubeZ + 1])
                     return true;
             }
         }
@@ -114,7 +114,7 @@ export default class Block {
     _collisionY() {
         for (let position of this.positions) {
             let [cubeX, cubeY, cubeZ] = this.getCubeMatrixIndex(position);
-            if (cubeY === 0 || board.matrix[cubeY - 1][cubeX][cubeZ]) {
+            if (cubeY === 0 || currentLevel.board.matrix[cubeY - 1][cubeX][cubeZ] || currentLevel.board.barrierMatrix[cubeY][cubeX][cubeZ]) {
                 return true;
             }
         }
@@ -139,11 +139,11 @@ export default class Block {
                     this.state.readyToSettle = false;
                     showInfo('+' + parseInt((this.positions.length * Math.pow(this.state.originalSpeed / BLOCK_SPEED, 2)).toString()), '#fff');
                     addScore(parseInt((this.positions.length * Math.pow(this.state.originalSpeed / BLOCK_SPEED, 2)).toString()));
-                    // update the info of the board
+                    // update the info of the level1.board
                     for (let position of this.positions) {
                         let [cubeX, cubeY, cubeZ] = this.getCubeMatrixIndex(position);
-                        board.matrix[cubeY][cubeX][cubeZ] = 1;
-                        board.colorMatrix[cubeY][cubeX][cubeZ] = this.color;
+                        currentLevel.board.matrix[cubeY][cubeX][cubeZ] = 1;
+                        currentLevel.board.colorMatrix[cubeY][cubeX][cubeZ] = this.color;
                     }
                 } else {
                     this.state.allowRotate = false;

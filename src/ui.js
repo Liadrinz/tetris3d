@@ -1,10 +1,10 @@
 import './ui.css';
-import { board } from './logic';
+import { currentLevel } from './logic';
 import { theme } from './config';
 import Block from './Block';
 import { scene } from './Root';
 import * as THREE from 'three';
-import { vueApp } from './main';
+import { freeDrop } from './Physical';
 
 export function showInfo(text, color) {
     let infoBox = document.createElement('p');
@@ -86,7 +86,7 @@ export function hideMessage(callback) {
 }
 
 function pauseButton() {
-    if (board.dieCheck()) return;
+    if (currentLevel.board.dieCheck()) return;
     let pauseButton = document.createElement('el-button');
     pauseButton.id = 'pause-button';
     pauseButton.icon = 'el-icon-video-play';
@@ -141,6 +141,9 @@ export function showTitle(callback = (title) => {}) {
 
     let title = new THREE.Group();
     let TETRIS = [T1, E, T2, R, I, S];
+    for (let letter of TETRIS) {
+        freeDrop(letter.object3d, 1, 100, .5, false);
+    }
     let total = [0, 0, 0, 0, 0, 0];
     let totalRot = [0, 0, 0, 0, 0, 0];
     let direction = [1, -1, 1, -1, 1, -1];

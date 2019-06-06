@@ -1,3 +1,7 @@
+:root {
+    --btn-font: 50px;
+}
+
 .control-bar {
     display: inline-block;
     position: absolute;
@@ -13,7 +17,7 @@
     color: #fff;
     cursor: pointer;
     padding: 10px;
-    font-size: 50px;
+    font-size: var(--btn-font);
     font-weight: bolder;
 }
 
@@ -23,7 +27,7 @@
     left: 25px;
     top: 75px;
     background: rgba(0, 0, 0, 0);
-    font-size: 30px;
+    font-size: var(--btn-font);
     color: #ffffff;
 }
 
@@ -35,9 +39,8 @@
     display: inline-block;
     position: absolute;
     color: #ff8585;
-    font-size: 50px;
+    font-size: var(--btn-font);
     font-weight: bolder;
-    transition: all 0.5s;
 }
 
 #menu p:hover {
@@ -47,5 +50,8 @@
 }
 
 #menu p {
+    color: #ff8585;
     margin: 15px;
+    font-size: var(--btn-font);
+    transition: all 0.5s;
 }

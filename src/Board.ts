@@ -1,9 +1,10 @@
 import * as THREE from 'three';
 import { scene } from './Root';
-import { currentBox, history, board, guideSteps } from './logic';
 import { BOARD_SIZE, MAX_LAYERS, MAX_OPACITY, BLOCK_SPEED, newHere, setNewHere, BoardSize } from './config';
 import { showInfo, hideMessage, hideDemo } from './ui';
 import History from './History';
+import Barrier from './Barrier';
+import { currentLevel, guideSteps } from './logic';
 
 const R = Math.PI / 2;
 
@@ -14,24 +15,25 @@ export interface BoardState {
 
 // only one Board instance in a game
 export default class Board {
-    size: BoardSize;
-    state: BoardState;
+    size: BoardSize = BOARD_SIZE;
+    state: BoardState = {
+        fadeStop: false,
+        showStop: false
+    };
     leftMaterial: THREE.MeshPhongMaterial;
     rightMaterial: THREE.MeshPhongMaterial;
     frontMaterial: THREE.MeshPhongMaterial;
     backMaterial: THREE.MeshPhongMaterial;
-    score: number;
+    score: number = 0;
     history: History;
+    barriers: Array<Barrier>;
     object3d: THREE.Object3D;
-    matrix: Array<Array<Array<number>>>;
-    colorMatrix: Array<Array<Array<number>>>;
-    constructor(history: History) {
-        this.size = BOARD_SIZE;
-        this.state = {
-            fadeStop: false,
-            showStop: false
-        }
+    barrierObjects: Array<THREE.Object3D> = [];
+    matrix: Array<Array<Array<number>>> = [];
+    colorMatrix: Array<Array<Array<number>>> = [];
+    barrierMatrix: Array<Array<Array<number>>> = [];
 
+    constructor(history: History, barriers: Array<Barrier> = null) {
         // build walls
         this.leftMaterial = new THREE.MeshPhongMaterial({ color: 0xa0a0a0, opacity: 0.0, transparent: true });
         let leftWall = new THREE.Mesh(
@@ -69,6 +71,15 @@ export default class Board {
         backWall.translateZ(BOARD_SIZE.z + 0.02);
         scene.add(leftWall, rightWall, frontWall, backWall);
 
+        if (barriers !== null)
+            this.barriers = barriers;
+        else this.barriers = [];
+
+        this.barrierMatrix = [];  // 0-1 matrix, showing which positions have a barrier
+        for (let barrier of this.barriers) {
+            this.barrierMatrix.push(barrier.matrix);
+        }
+        
         this._init(history);
     }
 
@@ -76,7 +87,7 @@ export default class Board {
         this.score = 0;
         this.history = history;
         this.object3d = new THREE.Group();
-
+    
         // the board receiving blocks
         var plane = new THREE.Mesh(
             new THREE.PlaneBufferGeometry(this.size.x, this.size.z),
@@ -107,6 +118,35 @@ export default class Board {
             }
             this.matrix.push(pane);
             this.colorMatrix.push(colorPane);
+        }
+    }
+
+    setBarriers(barriers: Array<Barrier>) {
+        for (let barObj of this.barrierObjects) {
+            scene.remove(barObj);
+        }
+        this.barriers = barriers;
+        this.barrierMatrix = []
+        let barPtr = 0;
+        for (let j = 0; j < this.size.y; j++) {
+            if (j == barriers[barPtr].layer) {
+                this.barrierMatrix.push(barriers[barPtr].matrix);
+            } else {
+                let subMatrix: Array<Array<number>> = [];
+                for (let i = 0; i < this.size.x; i++) {
+                    let vector: Array<number> = [];
+                    for (let k = 0; k < this.size.z; k++) {
+                        vector.push(0);
+                    }
+                    subMatrix.push(vector);
+                    this.barrierObjects.push(barriers[barPtr].object3d);
+                    scene.add(barriers[barPtr].object3d);
+                }
+                this.barrierMatrix.push(subMatrix);
+            }
+        }
+        for (let barrier of this.barriers) {
+            this.barrierMatrix.push(barrier.matrix);
         }
     }
 
@@ -323,9 +363,9 @@ export default class Board {
     }
 
     restart() {
-        scene.remove(currentBox[0].object3d);
-        history.reset();
-        board.reset(history);
-        currentBox[0].state.speed = BLOCK_SPEED;
+        scene.remove(currentLevel.current[0].object3d);
+        currentLevel.history.reset();
+        currentLevel.board.reset(currentLevel.history);
+        currentLevel.current[0].state.speed = BLOCK_SPEED;
     }
 }

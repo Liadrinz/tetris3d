@@ -1,7 +1,7 @@
 var webpack = require('webpack');
 
 module.exports = {
-    entry: __dirname + '/src/main.js',
+    entry: __dirname + '/src/main.ts',
     output: {
         path: __dirname + '/public/',
         filename: 'bundle.js'
@@ -14,7 +14,7 @@ module.exports = {
             },
             {
                 test: /\.(eot|svg|ttf|woff|woff2)(\?\S*)?$/,
-                loader: 'file-loader'
+                use: 'file-loader'
             },
             {
                 test: /\.tsx?$/,

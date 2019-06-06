@@ -1,12 +1,14 @@
-import loop, { board, currentBox, title } from './logic';
-import './main.css';
 import { scene } from './Root';
 import { Color } from 'three';
+import { blockControl } from './events'
 import { themes } from './config';
 import * as conf from './config';
+import { currentLevel, title, setReset } from './logic';
+import { hideMessage } from './ui'
+import { freeDrop } from './Physical';
 
 // the vue app
-export let vueApp = new Vue({
+let vueApp = new Vue({
     el: '#vue-app',
     data: function () {
         return {
@@ -14,7 +16,7 @@ export let vueApp = new Vue({
             game: false,
             workshop: false,
             settings: false,
-            score: board.score,
+            score: currentLevel.board.score,
             pauseControl: {
                 pasued: false
             }
@@ -26,11 +28,9 @@ export let vueApp = new Vue({
         menu.style.left = parseInt(((window.innerWidth - menu.clientWidth) / 2).toString()) + 'px';
         menu.style.top = parseInt(((window.innerHeight - menu.clientHeight) / 5 * 4).toString()) + 'px';
         document.getElementById('theme-button').className = conf.theme.button;
-        document.getElementsByClassName('control-bar')[0].style.left = window.innerWidth - 100 + 'px';
         window.addEventListener('resize', function () {
             menu.style.left = parseInt(((window.innerWidth - menu.clientWidth) / 2).toString()) + 'px';
             menu.style.top = parseInt(((window.innerHeight - menu.clientHeight) / 5 * 4).toString()) + 'px';
-            document.getElementsByClassName('control-bar')[0].style.left = window.innerWidth - 100 + 'px';
         });
     },
 
@@ -60,17 +60,22 @@ export let vueApp = new Vue({
         },
 
         back() {
-            this.started = false;
-            if (this.game) {
-                this.game = false;
-                scene.add(title);
+            if (currentLevel.board.dieCheck()) {
+                document.onkeypress = undefined;
+                currentLevel.board.restart();
+                blockControl(currentLevel.current);
+                hideMessage(() => { });
+                setReset(true);
             }
+            this.started = false;
+            this.game = false;
+            scene.add(title);
             this.workshop = false;
             this.settings = false;
         },
 
         pauseOrPlay() {
-            if (board.dieCheck()) return;
+            if (currentLevel.board.dieCheck()) return;
             if (this.pauseControl.pasued) {
                 this.pauseControl.pasued = false;
                 document.getElementById('pause-button').className = 'el-icon-video-pause';
@@ -78,7 +83,7 @@ export let vueApp = new Vue({
                 this.pauseControl.pasued = true;
                 document.getElementById('pause-button').className = 'el-icon-video-play';
             }
-            currentBox[0].state.paused = !currentBox[0].state.paused;
+            currentLevel.current[0].state.paused = !currentLevel.current[0].state.paused;
         },
 
         switchTheme() {
@@ -96,4 +101,4 @@ export let vueApp = new Vue({
     }
 });
 
-loop();
+export default vueApp;

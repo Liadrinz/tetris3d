@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { board } from './logic';
+import { currentLevel } from './logic';
 import { newHere } from './config';
 import { guideSteps } from './logic';
 import { showInfo, hideMessage } from './ui';
@@ -50,26 +50,26 @@ function rotateBlockPositions(block: Block, axis: number, direction: number, cal
 
         // overflow detection
         if (cubeX < 0) {
-            board.overflowShow('left');
+            currentLevel.board.overflowShow('left');
             callback(true);
             return;
         }
-        if (cubeX >= board.size.x) {
-            board.overflowShow('right');
+        if (cubeX >= currentLevel.board.size.x) {
+            currentLevel.board.overflowShow('right');
             callback(true);
             return;
         }
         if (cubeZ < 0) {
-            board.overflowShow('up');
+            currentLevel.board.overflowShow('up');
             callback(true);
             return;
         }
-        if (cubeZ >= board.size.z) {
-            board.overflowShow('down');
+        if (cubeZ >= currentLevel.board.size.z) {
+            currentLevel.board.overflowShow('down');
             callback(true);
             return;
         }
-        if (!board.matrix[cubeY][cubeX][cubeZ])
+        if (!currentLevel.board.matrix[cubeY][cubeX][cubeZ])
             cache.push([resI, resJ]);
         else {
             callback(true);
@@ -217,9 +217,9 @@ export function blockControl(currentBox: Array<Block>) {
         }
     }
     document.onkeyup = (e) => {
-        board.overflowFade('left');
-        board.overflowFade('right');
-        board.overflowFade('up');
-        board.overflowFade('down');
+        currentLevel.board.overflowFade('left');
+        currentLevel.board.overflowFade('right');
+        currentLevel.board.overflowFade('up');
+        currentLevel.board.overflowFade('down');
     }
 }
