@@ -1,14 +1,10 @@
 body {
+    color: #fff;
     margin: 0;
     overflow: hidden;
     -moz-user-select: none;
     -webkit-user-select: none;
     user-select: none;
-}
-
-.option,
-#game-name {
-    color: #fff;
 }
 
 .option {

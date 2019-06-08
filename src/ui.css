@@ -8,13 +8,8 @@
     top: 100px;
 }
 
-#message {
-    color: #fff;
-}
-
 .button {
     display: inline-block;
-    color: #fff;
     cursor: pointer;
     padding: 10px;
     font-size: var(--btn-font);
@@ -28,7 +23,6 @@
     top: 75px;
     background: rgba(0, 0, 0, 0);
     font-size: var(--btn-font);
-    color: #ffffff;
 }
 
 #vue-app {
@@ -36,6 +30,8 @@
 }
 
 #menu {
+    width: 300px;
+    text-align: center;
     display: inline-block;
     position: absolute;
     color: #ff8585;
@@ -44,14 +40,36 @@
 }
 
 #menu p:hover {
+    text-align: center;
     color: #ff8762;
     font-size: 57px;
     transition: all 0.5s;
 }
 
 #menu p {
+    text-align: center;
     color: #ff8585;
     margin: 15px;
     font-size: var(--btn-font);
     transition: all 0.5s;
+}
+
+#levels {
+    text-align: center;
+}
+
+.level-box {
+    font-size: 40px;
+    text-align: center;
+    display: inline-block;
+    border: 1.3px solid #fff;
+    border-radius: 5px;
+    width: 55px;
+    height: 55px;
+    margin: 10px;
+}
+
+.setting {
+    font-size: 50px;
+    text-align: center;
 }

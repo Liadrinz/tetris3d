@@ -1,12 +1,12 @@
 import { vueApp } from './main';
-import { currentLevel } from './logic';
+import { currentPtr } from './logic';
 
-export function addScore(score: number) {
-    currentLevel.board.score += score;
+export function addScore(score: number): void {
+    currentPtr[0].board.score += score;
     vueApp.addScore(score);
 }
 
-export function clearScore() {
-    currentLevel.board.score = 0;
+export function clearScore(): void {
+    currentPtr[0].board.score = 0;
     vueApp.setScore(0);
 }

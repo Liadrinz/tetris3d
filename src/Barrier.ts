@@ -15,7 +15,7 @@ export default class Barrier {
         this._init(history, layer, holes, reverse);
     }
 
-    _init(history: History, layer: number, holes: Array<Array<number>>, reverse = false) {
+    _init(history: History, layer: number, holes: Array<Array<number>>, reverse = false): void {
         this.history = history;
         this.layer = layer;
         this.holes = holes;

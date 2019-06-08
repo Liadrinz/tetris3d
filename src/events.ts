@@ -1,10 +1,11 @@
 import * as THREE from 'three';
-import { currentLevel } from './logic';
+import { currentPtr } from './logic';
 import { newHere } from './config';
 import { guideSteps } from './logic';
 import { showInfo, hideMessage } from './ui';
 import Block from './Block';
 import { vueApp } from './main';
+import Level from './Level';
 
 const R = Math.PI / 2;
 
@@ -15,7 +16,7 @@ const R = Math.PI / 2;
  * @param {Number} direction 1: Counter-clockwise, -1: Clockwise.
  * @param {function} callback (err: Boolean)
  */
-function rotateBlockPositions(block: Block, axis: number, direction: number, callback: Function = (err: boolean) => { }) {
+function rotateBlockPositions(block: Block, axis: number, direction: number, callback: Function = (err: boolean) => { }): void {
     let dim = [];
     for (let i = 0; i < 3; i++) {
         if (i === axis) {
@@ -50,26 +51,26 @@ function rotateBlockPositions(block: Block, axis: number, direction: number, cal
 
         // overflow detection
         if (cubeX < 0) {
-            currentLevel.board.overflowShow('left');
+            currentPtr[0].board.overflowShow('left');
             callback(true);
             return;
         }
-        if (cubeX >= currentLevel.board.size.x) {
-            currentLevel.board.overflowShow('right');
+        if (cubeX >= currentPtr[0].board.size.x) {
+            currentPtr[0].board.overflowShow('right');
             callback(true);
             return;
         }
         if (cubeZ < 0) {
-            currentLevel.board.overflowShow('up');
+            currentPtr[0].board.overflowShow('up');
             callback(true);
             return;
         }
-        if (cubeZ >= currentLevel.board.size.z) {
-            currentLevel.board.overflowShow('down');
+        if (cubeZ >= currentPtr[0].board.size.z) {
+            currentPtr[0].board.overflowShow('down');
             callback(true);
             return;
         }
-        if (!currentLevel.board.matrix[cubeY][cubeX][cubeZ])
+        if (!currentPtr[0].board.matrix[cubeY][cubeX][cubeZ])
             cache.push([resI, resJ]);
         else {
             callback(true);
@@ -85,9 +86,10 @@ function rotateBlockPositions(block: Block, axis: number, direction: number, cal
     callback(false);
 }
 
-export function blockControl(currentBox: Array<Block>) {
+export function blockControl(currentPtr: Array<Level>): void {
+    let currentBox: Array<Block> = currentPtr[0].current;
     document.onkeydown = (e) => {
-        if (vueApp.game === false) return;
+        if (vueApp.flags.game === false) return;
         if (newHere) {
             if (guideSteps[0] <= 0 && (e.keyCode > 36 && e.keyCode < 41 || e.keyCode === 188 || e.keyCode === 190)) return;
             if (guideSteps[1] <= 0 && e.keyCode === 32) return;
@@ -101,7 +103,7 @@ export function blockControl(currentBox: Array<Block>) {
                     guideSteps[2] += 1;
                     if (guideSteps[2] === 1) {
                         hideMessage(() => { });
-                        showInfo('<h1 style="color: #fff">Fantastic!</h1>', 0xfff);
+                        showInfo('<h1 style="color: #fff">牛逼嗷！</h1>', 0xfff);
                     }
                 }
                 block.state.speed = 0.2;
@@ -112,7 +114,7 @@ export function blockControl(currentBox: Array<Block>) {
                     guideSteps[1] += 1;
                     if (guideSteps[1] === 1) {
                         hideMessage(() => { });
-                        showInfo('<h1 style="color: #fff">Voila!</h1>', 0xfff);
+                        showInfo('<h1 style="color: #fff">牛逼嗷！</h1>', 0xfff);
                     }
                 }
                 let intervalEvent: Function = null, count = 0;
@@ -196,7 +198,7 @@ export function blockControl(currentBox: Array<Block>) {
                     guideSteps[0] += 1;
                     if (guideSteps[0] === 1) {
                         hideMessage(() => { });
-                        showInfo('<h1 style="color: #fff">Great!</h1>', 0xfff);
+                        showInfo('<h1 style="color: #fff">牛逼嗷！</h1>', 0xfff);
                     }
                 }
                 // translation
@@ -217,9 +219,9 @@ export function blockControl(currentBox: Array<Block>) {
         }
     }
     document.onkeyup = (e) => {
-        currentLevel.board.overflowFade('left');
-        currentLevel.board.overflowFade('right');
-        currentLevel.board.overflowFade('up');
-        currentLevel.board.overflowFade('down');
+        currentPtr[0].board.overflowFade('left');
+        currentPtr[0].board.overflowFade('right');
+        currentPtr[0].board.overflowFade('up');
+        currentPtr[0].board.overflowFade('down');
     }
 }

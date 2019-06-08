@@ -19,9 +19,9 @@ export function showInfo(text, color) {
     infoBox.style.top = centerV + 'px';
     infoBox.style.color = color;
     let s = setInterval(() => {
-        let topValue = parseFloat(infoBox.style.top.substr(0, infoBox.style.top.length - 2)) - 10;
+        let topValue = parseFloat(infoBox.style.top.substr(0, infoBox.style.top.length - 2)) - 5;
         infoBox.style.top = topValue + 'px';
-        let opacityValue = parseFloat(infoBox.style.opacity) - 0.1;
+        let opacityValue = parseFloat(infoBox.style.opacity) - 0.05;
         infoBox.style.opacity = '' + opacityValue;
         if (opacityValue <= 0) {
             clearInterval(s);
@@ -66,7 +66,7 @@ export function showMessage(text, color, callback, flash=true, align=[2, 2]) {
                 infoBox.style.opacity = val - 0.05 + '';
             }
             if (!document.getElementById('message')) clearInterval(s);
-        }, 75);
+        }, 30);
     }
     window.addEventListener('resize', () => {
         let centerH = window.innerWidth / 2 - infoBox.clientWidth / 2;

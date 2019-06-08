@@ -7,7 +7,7 @@
  * @param {Boolean} withBounce 落到终点是否弹跳
  * @param {Number} bounceTimes 弹跳次数
  */
-export function freeDrop(object3d: THREE.Object3D, dy: number, frames=100, accelerate=1, withBounce=true, bounceTimes=2, callback=()=>{}) {
+export function freeDrop(object3d: THREE.Object3D, dy: number, frames=100, accelerate=1, withBounce=true, bounceTimes=2, callback=()=>{}): void {
     if (bounceTimes === 0) {
         object3d.translateY(-dy);
         return;
@@ -29,4 +29,21 @@ export function freeDrop(object3d: THREE.Object3D, dy: number, frames=100, accel
         }
         step += accelerate * dy / scale;
     }, 1000/frames/accelerate/5);
+}
+
+export function hex(num: number, len: number = 6): string {
+    let seqs = [];
+    for (let i = 0; i < 10; i++) {
+        seqs.push(i.toString());
+    }
+    seqs.push('A', 'B', 'C', 'D', 'E', 'F');
+    let str = '';
+    while (num > 0) {
+        str = seqs[num % 16] + str;
+        num = parseInt((num / 16).toString());
+    }
+    while (str.length < len) {
+        str = '0' + str;
+    }
+    return str
 }

@@ -3,20 +3,25 @@ import { Color } from 'three';
 import { blockControl } from './events'
 import { themes } from './config';
 import * as conf from './config';
-import { currentLevel, title, setReset } from './logic';
+import { currentPtr, title, setReset, setLevel } from './logic';
 import { hideMessage } from './ui'
-import { freeDrop } from './Physical';
+import allLevels from './loadLevel';
 
 // the vue app
 let vueApp = new Vue({
     el: '#vue-app',
     data: function () {
         return {
-            started: false,
-            game: false,
-            workshop: false,
-            settings: false,
-            score: currentLevel.board.score,
+            flags: {
+                started: false,
+                levelChoice: false,
+                game: false,
+                workshop: false,
+                settings: false,
+            },
+            score: currentPtr[0].board.score,
+            targetScore: currentPtr[0].levelInfo.targetScore,
+            allLevels: allLevels,
             pauseControl: {
                 pasued: false
             }
@@ -36,19 +41,30 @@ let vueApp = new Vue({
 
     methods: {
         startGame() {
-            this.started = true;
-            this.game = true;
+            this.flags.started = true;
+            this.flags.levelChoice = true;
             scene.remove(title);
         },
 
+        startLevel(level) {
+            this.flags.levelChoice = false;
+            this.flags.game = true;
+            setLevel(level.levelNum - 1);
+            currentPtr[0].board.score = 0;
+            currentPtr[0].history.reset();
+            currentPtr[0].board.reset(currentPtr[0].history);
+            this.setScore(0);
+            this.targetScore = level.levelInfo.targetScore;
+        },
+
         startWorkshop() {
-            this.started = true;
-            this.workshop = true;
+            this.flags.started = true;
+            this.flags.workshop = true;
         },
 
         startSettings() {
-            this.started = true;
-            this.settings = true;
+            this.flags.started = true;
+            this.flags.settings = true;
         },
 
         addScore(score) {
@@ -60,22 +76,27 @@ let vueApp = new Vue({
         },
 
         back() {
-            if (currentLevel.board.dieCheck()) {
+            if (currentPtr[0].board.dieCheck()) {
                 document.onkeypress = undefined;
-                currentLevel.board.restart();
-                blockControl(currentLevel.current);
+                currentPtr[0].board.restart();
+                blockControl(currentPtr[0].current);
                 hideMessage(() => { });
                 setReset(true);
             }
-            this.started = false;
-            this.game = false;
-            scene.add(title);
-            this.workshop = false;
-            this.settings = false;
+            if (this.flags.game) {
+                this.flags.game = false;
+                this.flags.levelChoice = true;
+            } else {
+                scene.add(title);
+                this.flags.levelChoice = false;
+                this.flags.started = false;
+                this.flags.workshop = false;
+                this.flags.settings = false;
+            }
         },
 
         pauseOrPlay() {
-            if (currentLevel.board.dieCheck()) return;
+            if (currentPtr[0].board.dieCheck()) return;
             if (this.pauseControl.pasued) {
                 this.pauseControl.pasued = false;
                 document.getElementById('pause-button').className = 'el-icon-video-pause';
@@ -83,7 +104,7 @@ let vueApp = new Vue({
                 this.pauseControl.pasued = true;
                 document.getElementById('pause-button').className = 'el-icon-video-play';
             }
-            currentLevel.current[0].state.paused = !currentLevel.current[0].state.paused;
+            currentPtr[0].current[0].state.paused = !currentPtr[0].current[0].state.paused;
         },
 
         switchTheme() {

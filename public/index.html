@@ -15,30 +15,31 @@
 
 <body>
     <div id="vue-app" v-cloak>
-        <i class="el-icon-back button" v-show="started" @click="back"></i>
-        <div v-show="started && game">
+        <i class="el-icon-back button" v-show="flags.started" @click="back"></i>
+        <div v-show="flags.started && flags.levelChoice" id="levels">
+            <div v-for="level in allLevels" class="level-box" @click="() => { startLevel(level) }">{{level['levelNum']}}</div>
+        </div>
+        <div v-show="flags.started && flags.game">
             <div id="score-box">
-                Score {{score}}
+                分数 {{score}}/{{targetScore}}
             </div>
         </div>
-        <div v-show="started && workshop">
+        <div v-show="flags.started && flags.workshop">
 
         </div>
-        <div v-show="started && settings">
-            <p>Theme<i id="theme-button" class="button" style="font-size: 50px; font-weight: bold; padding-left: 30px;"
+        <div v-show="flags.started && flags.settings">
+            <p class="setting">主题<i id="theme-button" class="button" style="font-size: 50px; font-weight: bold; padding-left: 30px;"
                     class="el-icon-sunny" @click="switchTheme"></i></p>
         </div>
-        <div v-show="!started">
-            <div id="menu">
-                <p @click="startGame">START</p>
-                <p @click="startWorkshop">WORKSHOP</p>
-                <p @click="startSettings">SETTINGS</p>
-            </div>
+        <div id="menu" v-show="!flags.started">
+            <p @click="startGame">开始</p>
+            <p @click="startWorkshop">工坊</p>
+            <p @click="startSettings">设置</p>
         </div>
     </div>
 </body>
 <script src="https://unpkg.com/vue@2.6.10/dist/vue.js"></script>
 <script src="https://unpkg.com/element-ui@2.8.2/lib/index.js"></script>
-<script src="bundle.js"></script>
+<script src="js/bundle.js"></script>
 
 </html>

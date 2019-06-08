@@ -1,10 +1,11 @@
 import * as THREE from 'three';
 import { scene } from './Root';
-import { BOARD_SIZE, MAX_LAYERS, MAX_OPACITY, BLOCK_SPEED, newHere, setNewHere, BoardSize } from './config';
+import { BOARD_SIZE, MAX_LAYERS, MAX_OPACITY, newHere, setNewHere, BoardSize } from './config';
 import { showInfo, hideMessage, hideDemo } from './ui';
 import History from './History';
 import Barrier from './Barrier';
-import { currentLevel, guideSteps } from './logic';
+import { currentPtr, guideSteps } from './logic';
+import { hex } from './Physical';
 
 const R = Math.PI / 2;
 
@@ -83,7 +84,7 @@ export default class Board {
         this._init(history);
     }
 
-    _init(history: History) {
+    _init(history: History): void {
         this.score = 0;
         this.history = history;
         this.object3d = new THREE.Group();
@@ -121,7 +122,7 @@ export default class Board {
         }
     }
 
-    setBarriers(barriers: Array<Barrier>) {
+    setBarriers(barriers: Array<Barrier>): void {
         for (let barObj of this.barrierObjects) {
             scene.remove(barObj);
         }
@@ -129,8 +130,11 @@ export default class Board {
         this.barrierMatrix = []
         let barPtr = 0;
         for (let j = 0; j < this.size.y; j++) {
-            if (j == barriers[barPtr].layer) {
+            if (barPtr < barriers.length && j == barriers[barPtr].layer) {
                 this.barrierMatrix.push(barriers[barPtr].matrix);
+                this.barrierObjects.push(barriers[barPtr].object3d);
+                scene.add(barriers[barPtr].object3d);
+                barPtr++;
             } else {
                 let subMatrix: Array<Array<number>> = [];
                 for (let i = 0; i < this.size.x; i++) {
@@ -139,8 +143,6 @@ export default class Board {
                         vector.push(0);
                     }
                     subMatrix.push(vector);
-                    this.barrierObjects.push(barriers[barPtr].object3d);
-                    scene.add(barriers[barPtr].object3d);
                 }
                 this.barrierMatrix.push(subMatrix);
             }
@@ -151,7 +153,7 @@ export default class Board {
     }
 
     // show walls when overflow
-    overflowShow(direction: string) {
+    overflowShow(direction: string): void {
         showInfo('Stucked!', '#fff');
         this.state.showStop = false;
         this.state.fadeStop = true;
@@ -186,7 +188,7 @@ export default class Board {
         }
     }
 
-    overflowFade(direction: string) {
+    overflowFade(direction: string): void {
         let s;
         this.state.fadeStop = false;
         this.state.showStop = true;
@@ -221,12 +223,12 @@ export default class Board {
         }
     }
 
-    reset(history: History) {
+    reset(history: History): void {
         scene.remove(this.object3d);
         this._init(history);
     }
 
-    eliminateCheck() {
+    eliminateCheck(): void {
         let rowsToEliminate: Array<Array<string|number>> = [];
 
         // collect rows to be eliminated on axis z
@@ -242,7 +244,7 @@ export default class Board {
                     }
                 }
                 if (equals) {
-                    rowsToEliminate.push([j.toString(), i.toString(), 'x']);
+                    rowsToEliminate.push([j.toString(), i.toString(), 'x', this.colorMatrix[j][i][0]]);
                 }
             }
         }
@@ -278,11 +280,12 @@ export default class Board {
                     localStorage.setItem('new-comer', 'false');
                 }
             }
-            let [layer, index, axis] = args;
+            let [layer, index, axis, color] = args;
+            color = parseInt(color.toString());
             layer = parseInt(layer.toString());
             index = parseInt(index.toString());
             axis = axis.toString();
-            this.history.eliminateRow(layer, index, axis);
+            this.history.eliminateRow(layer, index, axis, '#' + hex(color));
             if (axis === 'x') {
                 for (let k = 0; k < this.size.z; k++) {
                     for (let j = layer; j < this.size.y; j++) {
@@ -349,7 +352,7 @@ export default class Board {
         }
     }
 
-    dieCheck() {
+    dieCheck(): boolean {
         for (let j = MAX_LAYERS - 1; j < this.size.y; j++) {
             for (let i = 0; i < this.size.x; i++) {
                 for (let k = 0; k < this.size.z; k++) {
@@ -362,10 +365,10 @@ export default class Board {
         return false;
     }
 
-    restart() {
-        scene.remove(currentLevel.current[0].object3d);
-        currentLevel.history.reset();
-        currentLevel.board.reset(currentLevel.history);
-        currentLevel.current[0].state.speed = BLOCK_SPEED;
+    restart(): void {
+        scene.remove(currentPtr[0].current[0].object3d);
+        currentPtr[0].history.reset();
+        currentPtr[0].board.reset(currentPtr[0].history);
+        currentPtr[0].current[0].state.speed = currentPtr[0].levelInfo.initSpeed;
     }
 }

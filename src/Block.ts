@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import { scene } from './Root';
-import { currentLevel } from './logic';
+import { currentPtr } from './logic';
 import { addScore } from './Score';
-import { BOARD_SIZE, BLOCK_SPEED, INIT_BLOCK_Y, BoardSize } from './config';
+import { BOARD_SIZE, INIT_BLOCK_Y, BoardSize } from './config';
 import { showInfo } from './ui';
 
 export interface BlockState {
@@ -28,9 +28,10 @@ export default class Block {
         this.positions = positions;
         this.center = center;
         this.color = color;
+        console.log(currentPtr[0].levelInfo.initSpeed);
         this.state = {
-            originalSpeed: BLOCK_SPEED,  // the normal speed of this block
-            speed: BLOCK_SPEED,  // current speed of this block
+            originalSpeed: currentPtr[0].levelInfo.initSpeed,  // the normal speed of this block
+            speed: currentPtr[0].levelInfo.initSpeed,  // current speed of this block
             shown: false,
             readyToSettle: false,
             settled: false,
@@ -66,7 +67,7 @@ export default class Block {
         this.object3d.position.y = INIT_BLOCK_Y;
     }
 
-    getCubeMatrixIndex(position: Array<number>) {
+    getCubeMatrixIndex(position: Array<number>): Array<number> {
         let cubeX = parseInt((this.object3d.position.x - this.center[0] + position[0] + 0.5).toString());
         let cubeY = parseInt((this.object3d.position.y - this.center[1] + position[1] + 0.5).toString());
         let cubeZ = parseInt((this.object3d.position.z - this.center[2] + position[2] + 0.5).toString());
@@ -74,36 +75,36 @@ export default class Block {
     }
 
     // if there is collision when moving on x and z
-    _collisionXZ(direction: string) {
+    _collisionXZ(direction: string): boolean {
         for (let position of this.positions) {
             let [cubeX, cubeY, cubeZ] = this.getCubeMatrixIndex(position);
             if (direction === 'left') {
                 if (cubeX <= 0) {
-                    currentLevel.board.overflowShow('left');
+                    currentPtr[0].board.overflowShow('left');
                     return true;
                 }
-                if (currentLevel.board.matrix[cubeY][cubeX - 1][cubeZ] || currentLevel.board.barrierMatrix[cubeY + 1][cubeX - 1][cubeZ])
+                if (currentPtr[0].board.matrix[cubeY][cubeX - 1][cubeZ] || currentPtr[0].board.barrierMatrix[cubeY + 1][cubeX - 1][cubeZ])
                     return true;
             } else if (direction === 'up') {
                 if (cubeZ <= 0) {
-                    currentLevel.board.overflowShow('up');
+                    currentPtr[0].board.overflowShow('up');
                     return true;
                 }
-                if (currentLevel.board.matrix[cubeY][cubeX][cubeZ - 1] || currentLevel.board.barrierMatrix[cubeY + 1][cubeX][cubeZ - 1])
+                if (currentPtr[0].board.matrix[cubeY][cubeX][cubeZ - 1] || currentPtr[0].board.barrierMatrix[cubeY + 1][cubeX][cubeZ - 1])
                     return true;
             } else if (direction === 'right') {
                 if (cubeX >= this.boardSize.x - 1) {
-                    currentLevel.board.overflowShow('right')
+                    currentPtr[0].board.overflowShow('right')
                     return true;
                 }
-                if (currentLevel.board.matrix[cubeY][cubeX + 1][cubeZ] || currentLevel.board.barrierMatrix[cubeY + 1][cubeX + 1][cubeZ])
+                if (currentPtr[0].board.matrix[cubeY][cubeX + 1][cubeZ] || currentPtr[0].board.barrierMatrix[cubeY + 1][cubeX + 1][cubeZ])
                     return true;
             } else if (direction === 'down') {
                 if (cubeZ >= this.boardSize.z - 1) {
-                    currentLevel.board.overflowShow('down');
+                    currentPtr[0].board.overflowShow('down');
                     return true;
                 }
-                if (currentLevel.board.matrix[cubeY][cubeX][cubeZ + 1] || currentLevel.board.barrierMatrix[cubeY + 1][cubeX][cubeZ + 1])
+                if (currentPtr[0].board.matrix[cubeY][cubeX][cubeZ + 1] || currentPtr[0].board.barrierMatrix[cubeY + 1][cubeX][cubeZ + 1])
                     return true;
             }
         }
@@ -111,10 +112,10 @@ export default class Block {
     }
 
     // if there is collision on y
-    _collisionY() {
+    _collisionY(): boolean {
         for (let position of this.positions) {
             let [cubeX, cubeY, cubeZ] = this.getCubeMatrixIndex(position);
-            if (cubeY === 0 || currentLevel.board.matrix[cubeY - 1][cubeX][cubeZ] || currentLevel.board.barrierMatrix[cubeY][cubeX][cubeZ]) {
+            if (cubeY === 0 || currentPtr[0].board.matrix[cubeY - 1][cubeX][cubeZ] || currentPtr[0].board.barrierMatrix[cubeY][cubeX][cubeZ]) {
                 return true;
             }
         }
@@ -122,7 +123,7 @@ export default class Block {
     }
 
     // called each frame, updating the state of the block
-    update() {
+    update(): void {
         if (this.state.paused) {
             this.state.settled = false;
             return;
@@ -137,13 +138,13 @@ export default class Block {
                 if (this.state.readyToSettle && this._collisionY()) {
                     this.state.settled = true;
                     this.state.readyToSettle = false;
-                    showInfo('+' + parseInt((this.positions.length * Math.pow(this.state.originalSpeed / BLOCK_SPEED, 2)).toString()), '#fff');
-                    addScore(parseInt((this.positions.length * Math.pow(this.state.originalSpeed / BLOCK_SPEED, 2)).toString()));
+                    showInfo('+5', '#fff');
+                    addScore(5);
                     // update the info of the level1.board
                     for (let position of this.positions) {
                         let [cubeX, cubeY, cubeZ] = this.getCubeMatrixIndex(position);
-                        currentLevel.board.matrix[cubeY][cubeX][cubeZ] = 1;
-                        currentLevel.board.colorMatrix[cubeY][cubeX][cubeZ] = this.color;
+                        currentPtr[0].board.matrix[cubeY][cubeX][cubeZ] = 1;
+                        currentPtr[0].board.colorMatrix[cubeY][cubeX][cubeZ] = this.color;
                     }
                 } else {
                     this.state.allowRotate = false;

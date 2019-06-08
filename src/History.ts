@@ -1,10 +1,11 @@
 import * as THREE from 'three';
 import { scene } from './Root';
 import { addScore } from './Score';
-import { BOARD_SIZE, BLOCK_SPEED, BoardSize } from './config';
+import { BOARD_SIZE, BoardSize } from './config';
 import { showInfo } from './ui';
 import { freeDrop } from './Physical';
 import Block from './Block';
+import { currentPtr } from './logic';
 
 /**
  * To record blocks having been dropped to the board.
@@ -86,7 +87,7 @@ export default class History {
      * @param {Number} index Which row (column).
      * @param {String} axis 'x' or 'z'.
      */
-    eliminateRow(layer: number, index: number, axis: string = 'z') {
+    eliminateRow(layer: number, index: number, axis: string = 'z', color: string): void {
         if (axis === 'z') {
             for (let i = 0; i < this.boardSize.x; i++) {
                 this.object3d.remove(this._dict[layer][i][index]);
@@ -116,15 +117,15 @@ export default class History {
                 }
             }
         }
-        showInfo('<p style="font-size: 40px; padding-top: 50px;">+' + parseInt((10 * Math.pow(this.prevBlock.state.originalSpeed / BLOCK_SPEED, 2)) + '</p>').toString(), '#79d0a4');
-        addScore(parseInt((10 * Math.pow(this.prevBlock.state.originalSpeed / BLOCK_SPEED, 2)).toString()));
+        showInfo('<p style="font-size: 60px; padding-top: 50px;">+' + 100 + '</p>', color);
+        addScore(100);
     }
 
     /**
      * eliminate one whole layer in history.
      * @param {Number} layer Which layer.
      */
-    eliminate(layer: number) {
+    eliminate(layer: number): void {
         for (let i = 0; i < this.boardSize.x; i++) {
             for (let k = 0; k < this.boardSize.z; k++) {
                 this.object3d.remove(this._dict[layer][i][k]);
@@ -142,7 +143,7 @@ export default class History {
                 }
             }
         }
-        showInfo('<p style="font-size: 60px; padding-top: 50px;">+' + parseInt((100 * Math.pow(this.prevBlock.state.originalSpeed / BLOCK_SPEED, 2)) + '</p>').toString(), '#cc3388');
-        addScore(parseInt((100 * Math.pow(this.prevBlock.state.originalSpeed / BLOCK_SPEED, 2)).toString()));
+        showInfo('<p style="font-size: 80px; padding-top: 50px;">+' + 500 + '</p>', '#cc3388');
+        addScore(500);
     }
 }

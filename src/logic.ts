@@ -1,7 +1,6 @@
 import { blockControl } from './events';
 import { renderer, scene, camera } from './Root';
 import { showMessage, hideMessage, showTitle, showDemo } from './ui';
-import Block from './Block';
 import { theme, newHere } from './config';
 import { vueApp } from './main';
 import Level from './Level';
@@ -14,7 +13,7 @@ export let title: THREE.Object3D = null;
 let titleShown = false;
 let reset = false;
 
-export function setReset(status: boolean) {
+export function setReset(status: boolean): void {
     reset = status;
 }
 
@@ -22,11 +21,18 @@ let removed = false;
 let started = false;
 export let guideSteps = [-4, -9, 0, 0];
 
-export let lv_Ptr: Array<number> = [0];
-export let currentLevel: Level = allLevels[lv_Ptr[0]];
-blockControl(currentLevel.current);
+let currentLvN = 0;
+export let currentPtr: Array<Level> = [allLevels[currentLvN]];
 
-export default function loop() {
+export function setLevel(num: number): void {
+    currentLvN = num;
+    currentPtr[0] = allLevels[num];
+    blockControl(currentPtr);
+}
+
+blockControl(currentPtr);
+
+export default function loop(): void {
     // animation
     requestAnimationFrame(loop);
     renderer.render(scene, camera);
@@ -34,7 +40,7 @@ export default function loop() {
     /** logic start */
 
     // before start
-    if (!vueApp.game) {
+    if (!vueApp.flags.game) {
         started = false;
         back();
         if (!titleShown) {
@@ -49,14 +55,13 @@ export default function loop() {
     }
 
     // while dead and not restart
-    if (currentLevel.board.dieCheck()) {
-        currentLevel.current[0].state.paused = true;
-        showMessage('<p style="text-align: center;">Blocks Overflow!<br><span style="font-size: 25px;">[press space to restart]</span></p>', '#fff', () => {
+    if (currentPtr[0].board.dieCheck()) {
+        currentPtr[0].current[0].state.paused = true;
+        showMessage('<p style="text-align: center;">白给了<br><span style="font-size: 25px;">[按空格键重来]</span></p>', '#fff', () => {
             document.onkeypress = (e) => {
                 if (e.keyCode === 32) {
                     document.onkeypress = undefined;
-                    currentLevel.board.restart();
-                    blockControl(currentLevel.current);
+                    currentPtr[0].board.restart();
                     hideMessage(() => { });
                     reset = true;
                 }
@@ -65,40 +70,73 @@ export default function loop() {
         return;
     }
 
+    
+    // level up
+    if (currentPtr[0].board.score >= currentPtr[0].levelInfo.targetScore) {
+        currentPtr[0].current[0].state.paused = true;
+        showMessage('<p style="text-align: center;">牛逼嗷！<br><span style="font-size: 25px;">[按空格键下一关]</span></p>', '#fff', () => {
+            document.onkeypress = (e) => {
+                if (e.keyCode === 32) {
+                    document.onkeypress = undefined;
+                    currentPtr[0].board.score = 0;
+                    clearScore();
+                    scene.remove(currentPtr[0].block.object3d);
+                    scene.remove(currentPtr[0].board.object3d);
+                    scene.remove(currentPtr[0].history.object3d);
+                    scene.remove(...currentPtr[0].board.barrierObjects);
+                    currentPtr[0].block = null;
+                    currentPtr[0] = allLevels[++currentLvN];
+                    blockControl(currentPtr);
+                    hideMessage(() => { });
+                    currentPtr[0].board.score = 0;
+                    currentPtr[0].history.reset();
+                    currentPtr[0].board.reset(currentPtr[0].history);
+                    currentPtr[0].board.score = 0;
+                    vueApp.targetScore = currentPtr[0].levelInfo.targetScore;
+                }
+            }
+        });
+        return;
+    }
+
     // restart
     if (reset) {
-        currentLevel.board.score = 0;
+        currentPtr[0].board.score = 0;
         clearScore();
-        scene.remove(currentLevel.block.object3d);
-        currentLevel.block = null;
+        scene.remove(currentPtr[0].block.object3d);
+        currentPtr[0].block = null;
         reset = false;
     }
 
+    // new-comer hints
     if (newHere) {
         if (guideSteps[0] <= 0) {
-            showMessage(`Use <img width="100" src="res/wasd.png"/> to move the block! (${4 + guideSteps[0]}/5)`, 0xfff, () => { }, true, [2, 1.25]);
+            showMessage(`用<img width="100" src="res/wasd.png"/>来移动 (${4 + guideSteps[0]}/5)`, 0xfff, () => { }, true, [2, 1.25]);
         } else if (guideSteps[1] <= 0) {
-            showMessage(`Use <img width="100" src="res/lryz.png"/> and <img width="100" src="res/lrx.png"/> to rotate it! (${9 + guideSteps[1]}/10)`, 0xfff, () => { }, true, [2, 1.25]);
+            showMessage(`用<img width="100" src="res/lryz.png"/>和<img width="100" src="res/lrx.png"/>来旋转方块 (${9 + guideSteps[1]}/10)`, 0xfff, () => { }, true, [2, 1.25]);
         } else if (guideSteps[2] <= 0) {
-            showMessage(`Now the block starts dropping. <br> Press space to drop it immediately! (${guideSteps[2]}/1)`, 0xfff, () => { }, true, [2, 1.25]);
-            currentLevel.current[0].state.speed = currentLevel.current[0].state.originalSpeed;
+            showMessage(`方块开始下落了<br>按空格键让它瞬间掉下 (${guideSteps[2]}/1)`, 0xfff, () => { }, true, [2, 1.25]);
+            currentPtr[0].current[0].state.speed = currentPtr[0].current[0].state.originalSpeed;
         } else if (guideSteps[3] <= 0) {
-            showMessage('Make a line with the same color <br> Or make a complete surface! (0/1)', 0xfff, () => { }, true, [2, 1.25]);
+            showMessage('相同颜色连成一条线<br>或者任意颜色凑齐一个平面 (0/1)', 0xfff, () => { }, true, [2, 1.25]);
             showDemo();
         }
     }
 
-    currentLevel.loop();
-    currentLevel.block.update();
+    // one frame of a block movement
+    currentPtr[0].loop();
+    currentPtr[0].block.update();
     /** logic end */
 }
 
-function back() {
+function back(): void {
     if (!removed) {
         try {
-            scene.remove(currentLevel.board.object3d, ...currentLevel.board.barrierObjects, currentLevel.history.object3d);
-            if (currentLevel.current[0]) {
-                scene.remove(currentLevel.current[0].object3d);
+            for (let level of allLevels) {
+                scene.remove(level.board.object3d, ...level.board.barrierObjects, level.history.object3d);
+                if (level.current[0]) {
+                    scene.remove(level.current[0].object3d);
+                }
             }
         } catch (e) {
 
@@ -108,11 +146,11 @@ function back() {
     }
 }
 
-function resume() {
+function resume(): void {
     if (!started) {
-        scene.add(currentLevel.board.object3d, ...currentLevel.board.barrierObjects, currentLevel.history.object3d);
-        if (currentLevel.current[0]) {
-            scene.add(currentLevel.current[0].object3d);
+        scene.add(currentPtr[0].board.object3d, ...currentPtr[0].board.barrierObjects, currentPtr[0].history.object3d);
+        if (currentPtr[0].current[0]) {
+            scene.add(currentPtr[0].current[0].object3d);
         }
         started = true;
         removed = false;

@@ -7,9 +7,8 @@ export interface BoardSize {
 export const BOARD_SIZE: BoardSize = { x: 6, y: 12, z: 6 };  // x, z must be even
 export const CAMERA_POSITION: Array<number> = [14, 15, 14];
 export const CAMERA_LOOK_AT: Array<number> = [0, 0, 0];
-export const BLOCK_SPEED: number = 0.01;  // speed of falling blocks
 export const INIT_BLOCK_Y: number = 10;  // initial position of a new block
-export const MAX_LAYERS: number = 8;  // the max safe layers
+export const MAX_LAYERS: number = 10;  // the max safe layers
 export const MAX_OPACITY: number = 0.4;  // of the wall
 
 export interface Theme {
@@ -24,6 +23,11 @@ export interface Themes {
     DARK: Theme
 }
 
+export interface Shape {
+    mat: Array<Array<number>>,
+    center: Array<number>
+}
+
 // theme configuration
 export const themes: Themes = {
     LIGHT: {
@@ -34,12 +38,12 @@ export const themes: Themes = {
     DARK: {
         button: 'el-icon-sunny',
         background: 0x0e213c,
-        blockColors: [0x395c91, 0x39916f, 0x39914e, 0x913966]
+        blockColors: [0x8cbaff, 0x8cffdd, 0xb2ff8c, 0xff978c]
     }
 }
 export var THEME: string = localStorage.getItem('game-theme-name') || 'LIGHT';
 export var theme: Theme = themes[THEME];
-export function switchTheme() {
+export function switchTheme(): void {
     if (THEME === 'DARK') {
         THEME = 'LIGHT';
         localStorage.setItem('game-theme-name', 'LIGHT');
@@ -59,7 +63,7 @@ export function setNewHere(flag: boolean) {
 }
 
 // cube shapes
-export var shapes = [
+export var shapes: Array<Shape> = [
     {
         mat: [
             [0, 0, 0], [1, 0, 0],

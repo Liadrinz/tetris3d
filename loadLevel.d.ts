@@ -18,6 +18,7 @@ interface LevelMeta {
     levelNum: number,
     levelInfo: LevelInfo,
     barriers: Array<BarrierMeta>
+    blocks: Array<number>
 }
 
 declare module "*.json" {
