@@ -19,6 +19,7 @@ let vueApp = new Vue({
                 workshop: false,
                 settings: false,
             },
+            levelNum: currentPtr[0].levelNum,
             score: currentPtr[0].board.score,
             targetScore: currentPtr[0].levelInfo.targetScore,
             allLevels: allLevels,
@@ -55,6 +56,7 @@ let vueApp = new Vue({
             currentPtr[0].board.reset(currentPtr[0].history);
             this.setScore(0);
             this.targetScore = level.levelInfo.targetScore;
+            this.levelNum = currentPtr[0].levelNum;
         },
 
         startWorkshop() {

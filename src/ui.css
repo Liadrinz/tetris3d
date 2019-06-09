@@ -54,8 +54,15 @@
     transition: all 0.5s;
 }
 
+#level-choice-wrapper {
+    position: relative;
+    left: 50%;
+}
+
 #levels {
-    text-align: center;
+    position: absolute;
+    left: -50%;
+    width: 500px;
 }
 
 .level-box {

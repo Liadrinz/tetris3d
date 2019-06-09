@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { scene } from './Root';
 import { currentPtr } from './logic';
 import { addScore } from './Score';
-import { BOARD_SIZE, INIT_BLOCK_Y, BoardSize } from './config';
+import { BOARD_SIZE, INIT_BLOCK_Y, BoardSize, newHere } from './config';
 import { showInfo } from './ui';
 
 export interface BlockState {
@@ -138,8 +138,10 @@ export default class Block {
                 if (this.state.readyToSettle && this._collisionY()) {
                     this.state.settled = true;
                     this.state.readyToSettle = false;
-                    showInfo('+5', '#fff');
-                    addScore(5);
+                    if (!newHere) {
+                        showInfo('+2', '#ddd');
+                        addScore(2);   
+                    }
                     // update the info of the level1.board
                     for (let position of this.positions) {
                         let [cubeX, cubeY, cubeZ] = this.getCubeMatrixIndex(position);

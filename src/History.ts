@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { scene } from './Root';
 import { addScore } from './Score';
-import { BOARD_SIZE, BoardSize } from './config';
+import { BOARD_SIZE, BoardSize, newHere } from './config';
 import { showInfo } from './ui';
 import { freeDrop } from './Physical';
 import Block from './Block';
@@ -87,7 +87,7 @@ export default class History {
      * @param {Number} index Which row (column).
      * @param {String} axis 'x' or 'z'.
      */
-    eliminateRow(layer: number, index: number, axis: string = 'z', color: string): void {
+    eliminateRow(layer: number, index: number, axis: string = 'z', color: string, combo: number): void {
         if (axis === 'z') {
             for (let i = 0; i < this.boardSize.x; i++) {
                 this.object3d.remove(this._dict[layer][i][index]);
@@ -117,15 +117,16 @@ export default class History {
                 }
             }
         }
-        showInfo('<p style="font-size: 60px; padding-top: 50px;">+' + 100 + '</p>', color);
-        addScore(100);
+        let delta = 100 * Math.pow(2, combo);
+        showInfo('<p style="font-size: 60px; padding-top: 50px;">+' + delta + '</p>', color);
+        addScore(delta);
     }
 
     /**
      * eliminate one whole layer in history.
      * @param {Number} layer Which layer.
      */
-    eliminate(layer: number): void {
+    eliminate(layer: number, combo: number): void {
         for (let i = 0; i < this.boardSize.x; i++) {
             for (let k = 0; k < this.boardSize.z; k++) {
                 this.object3d.remove(this._dict[layer][i][k]);
@@ -143,7 +144,8 @@ export default class History {
                 }
             }
         }
-        showInfo('<p style="font-size: 80px; padding-top: 50px;">+' + 500 + '</p>', '#cc3388');
-        addScore(500);
+        let delta = 300 * Math.pow(2, combo);
+        showInfo('<p style="font-size: 80px; padding-top: 50px;">+' + delta + '</p>', '#cc3388');
+        addScore(delta);
     }
 }

@@ -93,6 +93,7 @@ export default function loop(): void {
                     currentPtr[0].board.reset(currentPtr[0].history);
                     currentPtr[0].board.score = 0;
                     vueApp.targetScore = currentPtr[0].levelInfo.targetScore;
+                    vueApp.levelNum = currentPtr[0].levelNum;
                 }
             }
         });

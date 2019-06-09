@@ -33,6 +33,7 @@ export default class Board {
     matrix: Array<Array<Array<number>>> = [];
     colorMatrix: Array<Array<Array<number>>> = [];
     barrierMatrix: Array<Array<Array<number>>> = [];
+    combo: number = 0;
 
     constructor(history: History, barriers: Array<Barrier> = null) {
         // build walls
@@ -229,8 +230,48 @@ export default class Board {
     }
 
     eliminateCheck(): void {
-        let rowsToEliminate: Array<Array<string|number>> = [];
+        let comboed = false;
 
+        for (let j = 0; j < this.size.y; j++) {
+            let eliminatable = true;
+            for (let i = 0; i < this.size.x && eliminatable; i++) {
+                for (let k = 0; k < this.size.z && eliminatable; k++) {
+                    if (this.matrix[j][i][k] === 0) {
+                        eliminatable = false;
+                    }
+                }
+            }
+            if (eliminatable) {
+                comboed = true;
+                if (newHere) {
+                    guideSteps[3] += 1;
+                    if (guideSteps[3] === 1) {
+                        hideMessage(() => {});
+                        showInfo('<h1 style="color: #fff">新手教程完成！</h1>', 0xfff)
+                    }
+                }
+                this.history.eliminate(j, this.combo);
+                this.matrix.splice(j, 1);
+                this.colorMatrix.splice(j, 1);
+                j--;
+                let pane = [];
+                let colorPane = [];
+                for (let i = 0; i < this.size.x; i++) {
+                    let subPane = [];
+                    let colorSubPane = [];
+                    for (let k = 0; k < this.size.z; k++) {
+                        subPane.push(0);
+                        colorSubPane.push(-1);
+                    }
+                    pane.push(subPane);
+                    colorPane.push(colorSubPane);
+                }
+                this.matrix.push(pane);
+                this.colorMatrix.push(colorPane);
+            }
+        }
+
+        let rowsToEliminate: Array<Array<string|number>> = [];
         // collect rows to be eliminated on axis z
         for (let j = 0; j < this.size.y; j++) {
             for (let i = 0; i < this.size.x; i++) {
@@ -262,7 +303,8 @@ export default class Board {
                     }
                 }
                 if (equals) {
-                    rowsToEliminate.push([j.toString(), k.toString(), 'z']);
+                    rowsToEliminate.push([j.toString(), k.toString(), 'z', this.colorMatrix[j][0][k]]);
+                    comboed = true;
                 }
             }
         }
@@ -274,7 +316,7 @@ export default class Board {
                 guideSteps[3] += 1;
                 if (guideSteps[3] === 1) {
                     hideMessage(() => {});
-                    showInfo('<h1 style="color: #fff">Have fun! Bye!</h1>', 0xfff)
+                    showInfo('<h1 style="color: #fff">新手教程完成！</h1>', 0xfff)
                     setNewHere(false);
                     hideDemo();
                     localStorage.setItem('new-comer', 'false');
@@ -285,7 +327,7 @@ export default class Board {
             layer = parseInt(layer.toString());
             index = parseInt(index.toString());
             axis = axis.toString();
-            this.history.eliminateRow(layer, index, axis, '#' + hex(color));
+            this.history.eliminateRow(layer, index, axis, '#' + hex(color), this.combo);
             if (axis === 'x') {
                 for (let k = 0; k < this.size.z; k++) {
                     for (let j = layer; j < this.size.y; j++) {
@@ -313,42 +355,10 @@ export default class Board {
             }
         }
 
-        for (let j = 0; j < this.size.y; j++) {
-            let eliminatable = true;
-            for (let i = 0; i < this.size.x && eliminatable; i++) {
-                for (let k = 0; k < this.size.z && eliminatable; k++) {
-                    if (this.matrix[j][i][k] === 0) {
-                        eliminatable = false;
-                    }
-                }
-            }
-            if (eliminatable) {
-                if (newHere) {
-                    guideSteps[3] += 1;
-                    if (guideSteps[3] === 1) {
-                        hideMessage(() => {});
-                        showInfo('<h1 style="color: #fff">Have fun! Bye!</h1>', 0xfff)
-                    }
-                }
-                this.history.eliminate(j);
-                this.matrix.splice(j, 1);
-                this.colorMatrix.splice(j, 1);
-                j--;
-                let pane = [];
-                let colorPane = [];
-                for (let i = 0; i < this.size.x; i++) {
-                    let subPane = [];
-                    let colorSubPane = [];
-                    for (let k = 0; k < this.size.z; k++) {
-                        subPane.push(0);
-                        colorSubPane.push(-1);
-                    }
-                    pane.push(subPane);
-                    colorPane.push(colorSubPane);
-                }
-                this.matrix.push(pane);
-                this.colorMatrix.push(colorPane);
-            }
+        if (comboed) {
+            ++this.combo;
+        } else {
+            this.combo = 0;
         }
     }
 

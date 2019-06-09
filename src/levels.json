@@ -3,7 +3,7 @@
         "levelNum": 1,
         "levelInfo": {
             "initSpeed": 0.01,
-            "speedRate": 1.01,
+            "speedRate": 1.005,
             "targetScore": 500
         },
         "blocks": [0, 1, 2, 3, 4],
@@ -13,7 +13,7 @@
         "levelNum": 2,
         "levelInfo": {
             "initSpeed": 0.02,
-            "speedRate": 1.02,
+            "speedRate": 1.005,
             "targetScore": 1000
         },
         "blocks": [0, 1, 2, 3, 4],
@@ -22,8 +22,8 @@
     {
         "levelNum": 3,
         "levelInfo": {
-            "initSpeed": 0.01,
-            "speedRate": 1.02,
+            "initSpeed": 0.02,
+            "speedRate": 1.005,
             "targetScore": 1000
         },
         "blocks": [1, 3, 4],

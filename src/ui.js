@@ -27,7 +27,7 @@ export function showInfo(text, color) {
             clearInterval(s);
             document.body.removeChild(infoBox);
         }
-    }, 50);
+    }, 30);
 }
 
 export function showMessage(text, color, callback, flash=true, align=[2, 2]) {
@@ -142,7 +142,7 @@ export function showTitle(callback = (title) => {}) {
     let title = new THREE.Group();
     let TETRIS = [T1, E, T2, R, I, S];
     for (let letter of TETRIS) {
-        freeDrop(letter.object3d, 1, 100, .5, false);
+        freeDrop(letter.object3d, 1, 100, 1, true, 2);
     }
     let total = [0, 0, 0, 0, 0, 0];
     let totalRot = [0, 0, 0, 0, 0, 0];
@@ -154,18 +154,18 @@ export function showTitle(callback = (title) => {}) {
             TETRIS[i].object3d.translateY(direction[i] * 0.01);
             TETRIS[i].object3d.rotateY(rot[i] * 0.001);
             total[i] += 0.01;
-            if (total[i] >= 0.3) {
+            if (total[i] >= 0.6) {
                 total[i] = 0;
                 direction[i] = -direction[i];
             }
             totalRot[i] += 0.001;
-            if (totalRot[i] >= 0.05) {
+            if (totalRot[i] >= 0.08) {
                 totalRot[i] = 0;
                 rot[i] = -rot[i];
             }
         }, Math.random() * 30 + 15);
         TETRIS[i].object3d.translateX(4 * i);
-        TETRIS[i].object3d.translateY(-10);
+        TETRIS[i].object3d.translateY(-9);
         title.add(TETRIS[i].object3d);
     }
     title.translateZ(-2);
@@ -180,7 +180,7 @@ export function showDemo() {
     let demo = document.createElement('div');
     demo.id = 'demo';
     demo.style.position = 'absolute';
-    demo.style.top = '30%';
+    demo.style.top = '50%';
     demo.innerHTML = '<img width="130" src="res/demo.gif"/>';
     document.body.appendChild(demo);
 }

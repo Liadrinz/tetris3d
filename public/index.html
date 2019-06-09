@@ -16,11 +16,14 @@
 <body>
     <div id="vue-app" v-cloak>
         <i class="el-icon-back button" v-show="flags.started" @click="back"></i>
-        <div v-show="flags.started && flags.levelChoice" id="levels">
-            <div v-for="level in allLevels" class="level-box" @click="() => { startLevel(level) }">{{level['levelNum']}}</div>
+        <div id="level-choice-wrapper">
+            <div v-show="flags.started && flags.levelChoice" id="levels">
+                <div v-for="level in allLevels" class="level-box" @click="() => { startLevel(level) }">{{level['levelNum']}}</div>
+            </div>
         </div>
         <div v-show="flags.started && flags.game">
             <div id="score-box">
+                第{{levelNum}}关<br/>
                 分数 {{score}}/{{targetScore}}
             </div>
         </div>
@@ -33,7 +36,7 @@
         </div>
         <div id="menu" v-show="!flags.started">
             <p @click="startGame">开始</p>
-            <p @click="startWorkshop">工坊</p>
+            <p @click="startWorkshop" style="display: none;">工坊</p>
             <p @click="startSettings">设置</p>
         </div>
     </div>
