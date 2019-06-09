@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { scene } from './Root';
+import { scene, buffer } from './Root';
 import { addScore } from './Score';
 import { BOARD_SIZE, BoardSize, newHere } from './config';
 import { showInfo } from './ui';
@@ -35,7 +35,7 @@ export default class History {
             this._dict[j] = pane;
         }
         this.object3d = new THREE.Group();
-        scene.add(this.object3d);
+        buffer.add(scene, this.object3d);
     }
 
     reset() {

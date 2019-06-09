@@ -1,7 +1,7 @@
 import { blockControl } from './events';
-import { renderer, scene, camera } from './Root';
+import { renderer, scene, camera, buffer } from './Root';
 import { showMessage, hideMessage, showTitle, showDemo } from './ui';
-import { theme, newHere } from './config';
+import { newHere } from './config';
 import { vueApp } from './main';
 import Level from './Level';
 import allLevels from './loadLevel';
@@ -36,6 +36,7 @@ export default function loop(): void {
     // animation
     requestAnimationFrame(loop);
     renderer.render(scene, camera);
+    buffer.render();
 
     /** logic start */
 
@@ -149,9 +150,9 @@ function back(): void {
 
 function resume(): void {
     if (!started) {
-        scene.add(currentPtr[0].board.object3d, ...currentPtr[0].board.barrierObjects, currentPtr[0].history.object3d);
+        buffer.add(scene, currentPtr[0].board.object3d, ...currentPtr[0].board.barrierObjects, currentPtr[0].history.object3d);
         if (currentPtr[0].current[0]) {
-            scene.add(currentPtr[0].current[0].object3d);
+            buffer.add(scene, currentPtr[0].current[0].object3d);
         }
         started = true;
         removed = false;

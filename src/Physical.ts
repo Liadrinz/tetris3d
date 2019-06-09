@@ -23,9 +23,8 @@ export function freeDrop(object3d: THREE.Object3D, dy: number, frames=100, accel
             clearInterval(s);
             callback();
             if (withBounce) {
-                freeDrop(object3d, -dy / 5, frames, accelerate, true, bounceTimes - 1, () => {
-                    freeDrop(object3d, dy / 5, frames, accelerate, false, bounceTimes - 1);
-                });
+                freeDrop(object3d, -dy / 5, frames, accelerate, true, bounceTimes - 1);
+                freeDrop(object3d, dy / 5, frames, accelerate, false, bounceTimes - 1);
             }
         }
         step += accelerate * dy / scale;

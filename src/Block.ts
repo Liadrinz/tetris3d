@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { scene } from './Root';
+import { scene, buffer } from './Root';
 import { currentPtr } from './logic';
 import { addScore } from './Score';
 import { BOARD_SIZE, INIT_BLOCK_Y, BoardSize, newHere } from './config';
@@ -60,8 +60,7 @@ export default class Block {
                 new THREE.LineBasicMaterial({color: 0xc0c0c0})
             );
             border.position.set(x - center[0] + .5, y - center[1] + .5, z - center[2] + .5);
-            this.object3d.add(cube);
-            this.object3d.add(border);
+            buffer.addDelay(this.object3d, cube, border);
         }
 
         this.object3d.position.y = INIT_BLOCK_Y;
@@ -129,7 +128,7 @@ export default class Block {
             return;
         }
         if (!this.state.shown) {
-            scene.add(this.object3d);
+            buffer.add(scene, this.object3d);
             this.state.shown = true;
         }
         if (!this.state.settled) {

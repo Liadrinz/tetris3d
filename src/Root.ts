@@ -1,8 +1,10 @@
 import * as THREE from 'three';
 import { CAMERA_POSITION, CAMERA_LOOK_AT, theme } from './config';
+import Buffer from './Buffer';
 
 var container;
 var camera: THREE.PerspectiveCamera, scene: THREE.Scene, renderer: THREE.WebGLRenderer, light: THREE.DirectionalLight;
+var buffer = new Buffer();
 
 var init = function () {
     container = document.createElement('div');
@@ -46,4 +48,4 @@ var init = function () {
 
 init()
 
-export { camera, scene, light, renderer };
+export { camera, scene, light, renderer, buffer };

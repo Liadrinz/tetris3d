@@ -2,9 +2,8 @@ import './ui.css';
 import { currentLevel } from './logic';
 import { theme } from './config';
 import Block from './Block';
-import { scene } from './Root';
+import { scene, buffer } from './Root';
 import * as THREE from 'three';
-import { freeDrop } from './Physical';
 
 export function showInfo(text, color) {
     let infoBox = document.createElement('p');
@@ -141,9 +140,6 @@ export function showTitle(callback = (title) => {}) {
 
     let title = new THREE.Group();
     let TETRIS = [T1, E, T2, R, I, S];
-    for (let letter of TETRIS) {
-        freeDrop(letter.object3d, 1, 100, 1, true, 2);
-    }
     let total = [0, 0, 0, 0, 0, 0];
     let totalRot = [0, 0, 0, 0, 0, 0];
     let direction = [1, -1, 1, -1, 1, -1];
@@ -166,12 +162,12 @@ export function showTitle(callback = (title) => {}) {
         }, Math.random() * 30 + 15);
         TETRIS[i].object3d.translateX(4 * i);
         TETRIS[i].object3d.translateY(-9);
-        title.add(TETRIS[i].object3d);
+        buffer.addDelay(title, TETRIS[i].object3d);
     }
     title.translateZ(-2);
     title.rotateY(Math.PI / 4);
     title.translateX(-12);
-    scene.add(title);
+    buffer.add(scene, title);
     callback(title);
 }
 

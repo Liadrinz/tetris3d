@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { scene } from './Root';
+import { scene, buffer } from './Root';
 import { BOARD_SIZE, MAX_LAYERS, MAX_OPACITY, newHere, setNewHere, BoardSize } from './config';
 import { showInfo, hideMessage, hideDemo } from './ui';
 import History from './History';
@@ -71,7 +71,7 @@ export default class Board {
         backWall.translateX(parseInt((BOARD_SIZE.x / 2).toString()));
         backWall.translateY(parseInt((BOARD_SIZE.y / 2).toString()));
         backWall.translateZ(BOARD_SIZE.z + 0.02);
-        scene.add(leftWall, rightWall, frontWall, backWall);
+        buffer.add(scene, leftWall, rightWall, frontWall, backWall);
 
         if (barriers !== null)
             this.barriers = barriers;
@@ -98,9 +98,9 @@ export default class Board {
         plane.rotation.x = - Math.PI / 2;
         plane.receiveShadow = true;
         plane.position.set(parseInt((this.size.x / 2).toString()), 0, parseInt((this.size.z / 2).toString()));
-        this.object3d.add(plane);
+        buffer.add(this.object3d, plane);
 
-        scene.add(this.object3d);
+        buffer.add(scene, this.object3d);
         
         // initialize some matrixes
         this.matrix = [];  // 0-1 matrix, showing which positions have a block
@@ -134,7 +134,7 @@ export default class Board {
             if (barPtr < barriers.length && j == barriers[barPtr].layer) {
                 this.barrierMatrix.push(barriers[barPtr].matrix);
                 this.barrierObjects.push(barriers[barPtr].object3d);
-                scene.add(barriers[barPtr].object3d);
+                buffer.add(scene, barriers[barPtr].object3d);
                 barPtr++;
             } else {
                 let subMatrix: Array<Array<number>> = [];

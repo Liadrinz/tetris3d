@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import History from './History';
 import { BoardSize, BOARD_SIZE } from './config';
+import { buffer } from './Root';
 
 export default class Barrier {
     size: BoardSize
@@ -40,7 +41,7 @@ export default class Barrier {
         }
 
         this.object3d = new THREE.Group();
-
+        
         for (let i = 0; i < this.size.x; i++) {
             for (let j = 0; j < this.size.z; j++) {
                 if (this.matrix[i][j] == 1) {
@@ -53,7 +54,7 @@ export default class Barrier {
                     piece.rotation.x = - Math.PI / 2;
                     piece.receiveShadow = true;
                     piece.position.set(i + 0.5, this.layer - 0.5, j + 0.5);
-                    this.object3d.add(piece);
+                    buffer.add(this.object3d, piece);
                 }
             }
         }
