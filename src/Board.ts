@@ -89,17 +89,16 @@ export default class Board {
         this.score = 0;
         this.history = history;
         this.object3d = new THREE.Group();
-    
+        
         // the board receiving blocks
         var plane = new THREE.Mesh(
-            new THREE.PlaneBufferGeometry(this.size.x, this.size.z),
-            new THREE.MeshPhongMaterial({ color: 0xa0a0a0 })
+            new THREE.BoxGeometry(this.size.x, 15, this.size.z),
+            new THREE.MeshPhongMaterial({ color: 0xffffff })
         );
-        plane.rotation.x = - Math.PI / 2;
-        plane.receiveShadow = true;
-        plane.position.set(parseInt((this.size.x / 2).toString()), 0, parseInt((this.size.z / 2).toString()));
-        buffer.add(this.object3d, plane);
 
+        plane.receiveShadow = true;
+        plane.position.set(parseInt((this.size.x / 2).toString()), -7.5, parseInt((this.size.z / 2).toString()));
+        buffer.add(this.object3d, plane);
         buffer.add(scene, this.object3d);
         
         // initialize some matrixes

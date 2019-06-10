@@ -20,8 +20,8 @@ var init = function () {
 
     let ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambientLight);
-
-    light = new THREE.DirectionalLight(0xffffff, 0.5);
+    
+    light = new THREE.DirectionalLight(0xffffff, 0.3);
     light.position.set(0, 100, 0);
     light.lookAt(0, 0, 0);
     light.castShadow = true;

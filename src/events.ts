@@ -8,6 +8,7 @@ import { vueApp } from './main';
 import Level from './Level';
 
 const R = Math.PI / 2;
+let s: number = null;
 
 /**
  * Rotate the position infomation of a block.
@@ -90,6 +91,7 @@ export function blockControl(currentPtr: Array<Level>): void {
     let currentBox: Array<Block> = currentPtr[0].current;
     document.onkeydown = (e) => {
         if (vueApp.flags.game === false) return;
+        if (s !== null) return;
         if (newHere) {
             if (guideSteps[0] <= 0 && (e.keyCode > 36 && e.keyCode < 41 || e.keyCode === 188 || e.keyCode === 190)) return;
             if (guideSteps[1] <= 0 && e.keyCode === 32) return;
@@ -172,7 +174,7 @@ export function blockControl(currentPtr: Array<Level>): void {
                     block.state.allowRotate = true;
                 }, 200);
                 if (intervalEvent) {
-                    let s = setInterval(() => {
+                    s = setInterval(() => {
                         intervalEvent();
                         count++;
                         // copy the object to a new one
@@ -189,6 +191,7 @@ export function blockControl(currentPtr: Array<Level>): void {
                         block.object3d.copy(tempObject);
                         if (count === 5) {
                             clearInterval(s);
+                            s = null;
                         }
                     }, 20);
                 }

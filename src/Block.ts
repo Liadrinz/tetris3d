@@ -5,6 +5,8 @@ import { addScore } from './Score';
 import { BOARD_SIZE, INIT_BLOCK_Y, BoardSize, newHere } from './config';
 import { showInfo } from './ui';
 
+export const borderMaterial = new THREE.LineBasicMaterial({color: 0xc0c0c0});
+
 export interface BlockState {
     originalSpeed: number,  // the normal speed of this block
     speed: number,  // current speed of this block
@@ -23,44 +25,45 @@ export default class Block {
     state: BlockState;
     _cachedY: number;
     object3d: THREE.Object3D;
-    constructor(positions: Array<Array<number>>, center: Array<number>, color: number) {
+    constructor(positions: Array<Array<number>>, center: Array<number>, color: number, delay: boolean = true) {
         this.boardSize = BOARD_SIZE;
         this.positions = positions;
         this.center = center;
         this.color = color;
-        console.log(currentPtr[0].levelInfo.initSpeed);
-        this.state = {
-            originalSpeed: currentPtr[0].levelInfo.initSpeed,  // the normal speed of this block
-            speed: currentPtr[0].levelInfo.initSpeed,  // current speed of this block
-            shown: false,
-            readyToSettle: false,
-            settled: false,
-            allowRotate: true,
-            paused: false
+        if (currentPtr) {
+            this.state = {
+                originalSpeed: currentPtr[0].levelInfo.initSpeed,  // the normal speed of this block
+                speed: currentPtr[0].levelInfo.initSpeed,  // current speed of this block
+                shown: false,
+                readyToSettle: false,
+                settled: false,
+                allowRotate: true,
+                paused: false
+            }
         }
         this._cachedY = 0;
         this.object3d = new THREE.Group();
         let [x, y, z] = center;
         this.object3d.position.set(x, y, z);
 
+        let boxGeometry = new THREE.BoxGeometry(1, 1, 1);
+        let boxMaterial = new THREE.MeshLambertMaterial({ color: color });
+        let borderGeometry = new THREE.EdgesGeometry(boxGeometry, 1);
+        
         // building block
         for (let position of positions) {
             let [x, y, z] = position;
-            let boxGeometry = new THREE.BoxGeometry(1, 1, 1);
-            let cube = new THREE.Mesh(
-                boxGeometry,
-                new THREE.MeshLambertMaterial({ color: color })
-            );
+            let cube = new THREE.Mesh(boxGeometry, boxMaterial);
             cube.position.set(x - center[0] + .5, y - center[1] + .5, z - center[2] + .5);
             cube.castShadow = true;
             cube.receiveShadow = true;
-            let borderGeometry = new THREE.EdgesGeometry(boxGeometry, 1);
-            let border = new THREE.LineSegments(
-                borderGeometry,
-                new THREE.LineBasicMaterial({color: 0xc0c0c0})
-            );
+            let border = new THREE.LineSegments(borderGeometry, borderMaterial);
             border.position.set(x - center[0] + .5, y - center[1] + .5, z - center[2] + .5);
-            buffer.addDelay(this.object3d, cube, border);
+            if (delay) {
+                buffer.addDelay(this.object3d, cube, border);
+            } else {
+                buffer.add(this.object3d, cube, border);
+            }
         }
 
         this.object3d.position.y = INIT_BLOCK_Y;

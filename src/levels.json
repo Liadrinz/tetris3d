@@ -4,34 +4,54 @@
         "levelInfo": {
             "initSpeed": 0.01,
             "speedRate": 1.005,
-            "targetScore": 500
+            "targetScore": 200
         },
-        "blocks": [0, 1, 2, 3, 4],
+        "blocks": [1, 3],
         "barriers": []
     },
     {
         "levelNum": 2,
         "levelInfo": {
             "initSpeed": 0.02,
-            "speedRate": 1.005,
-            "targetScore": 1000
+            "speedRate": 1.0025,
+            "targetScore": 300
         },
-        "blocks": [0, 1, 2, 3, 4],
+        "blocks": [1, 3, 4],
         "barriers": []
     },
     {
         "levelNum": 3,
         "levelInfo": {
+            "initSpeed": 0.03,
+            "speedRate": 1.00125,
+            "targetScore": 400
+        },
+        "blocks": [0, 1, 3, 4],
+        "barriers": []
+    },
+    {
+        "levelNum": 4,
+        "levelInfo": {
+            "initSpeed": 0.04,
+            "speedRate": 1.00125,
+            "targetScore": 500
+        },
+        "blocks": [0, 1, 2, 3, 4],
+        "barriers": []
+    },
+    {
+        "levelNum": 5,
+        "levelInfo": {
             "initSpeed": 0.02,
             "speedRate": 1.005,
-            "targetScore": 1000
+            "targetScore": 500
         },
         "blocks": [1, 3, 4],
         "barriers": [
             {
                 "barrierInfo": {
                     "layer": 5,
-                    "matrix": [[2,2],[2,3],[3,2],[3,3]]
+                    "matrix": [[0,0],[0,1],[1,0],[1,1]]
                 },
                 "reverse": true
             }

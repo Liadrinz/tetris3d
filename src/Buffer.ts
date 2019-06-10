@@ -36,7 +36,7 @@ export default class Buffer {
             setTimeout(() => {
                 let pair = this.delaySpace.pop();
                 pair.parent.add(pair.target);
-            }, 50);
+            }, 0);
         }
     }
 }
