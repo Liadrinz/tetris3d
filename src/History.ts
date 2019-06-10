@@ -47,7 +47,7 @@ export default class History {
                 }
             }
         }
-        scene.remove(this.object3d);
+        buffer.remove(scene, this.object3d);
         this._init();
     }
 
@@ -56,20 +56,21 @@ export default class History {
      * @param {Block} block The block to be written into history.
      */
     write(block: Block) {
-        this.prevBlock = block;
-        scene.remove(block.object3d);
+        buffer.remove(scene, block.object3d);
+        let cubeMaterial = new THREE.MeshLambertMaterial({ color: block.color });
+        let boxGeometry = new THREE.BoxGeometry(1, 1, 1);
+        let borderMaterial = new THREE.LineBasicMaterial({color: 0xc0c0c0});
+        let borderGeometry = new THREE.EdgesGeometry(boxGeometry, 1);
         for (let position of block.positions) {
             let [cubeX, cubeY, cubeZ] = block.getCubeMatrixIndex(position);
             let cubeWithBorder = new THREE.Group();
-            let boxGeometry = new THREE.BoxGeometry(1, 1, 1)
             let cube = new THREE.Mesh(
                 boxGeometry,
-                new THREE.MeshLambertMaterial({ color: block.color })
+                cubeMaterial
             );
-            let borderGeometry = new THREE.EdgesGeometry(boxGeometry, 1);
             let border = new THREE.LineSegments(
                 borderGeometry,
-                new THREE.LineBasicMaterial({color: 0xc0c0c0})
+                borderMaterial
             );
             cube.position.set(cubeX + 0.5, cubeY + 0.5, cubeZ + 0.5);
             cube.castShadow = true;

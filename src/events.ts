@@ -8,6 +8,7 @@ import { vueApp } from './main';
 import Level from './Level';
 
 const R = Math.PI / 2;
+const unitAngle = 0.5;
 let s: number = null;
 
 /**
@@ -108,7 +109,7 @@ export function blockControl(currentPtr: Array<Level>): void {
                         showInfo('<h1 style="color: #fff">牛逼嗷！</h1>', 0xfff);
                     }
                 }
-                block.state.speed = 0.2;
+                block.state.speed = 100;
             }
             // rotation
             if (block.state.allowRotate && (e.keyCode > 36 && e.keyCode < 41 || e.keyCode === 188 || e.keyCode === 190)) {
@@ -124,7 +125,7 @@ export function blockControl(currentPtr: Array<Level>): void {
                     rotateBlockPositions(block, 1, 1, (err: boolean) => {
                         if (!err) {
                             intervalEvent = () => {
-                                block.object3d.rotateY(-R * 0.2);
+                                block.object3d.rotateY(-R * unitAngle);
                             }
                         }
                     });
@@ -132,7 +133,7 @@ export function blockControl(currentPtr: Array<Level>): void {
                     rotateBlockPositions(block, 0, -1, (err: boolean) => {
                         if (!err) {
                             intervalEvent = () => {
-                                block.object3d.rotateX(-R * 0.2);
+                                block.object3d.rotateX(-R * unitAngle);
                             }
                         }
                     });
@@ -140,7 +141,7 @@ export function blockControl(currentPtr: Array<Level>): void {
                     rotateBlockPositions(block, 1, -1, (err: boolean) => {
                         if (!err) {
                             intervalEvent = () => {
-                                block.object3d.rotateY(R * 0.2);
+                                block.object3d.rotateY(R * unitAngle);
                             }
                         }
                     });
@@ -148,7 +149,7 @@ export function blockControl(currentPtr: Array<Level>): void {
                     rotateBlockPositions(block, 0, 1, (err: boolean) => {
                         if (!err) {
                             intervalEvent = () => {
-                                block.object3d.rotateX(R * 0.2);
+                                block.object3d.rotateX(R * unitAngle);
                             }
                         }
                     });
@@ -156,7 +157,7 @@ export function blockControl(currentPtr: Array<Level>): void {
                     rotateBlockPositions(block, 2, 1, (err: boolean) => {
                         if (!err) {
                             intervalEvent = () => {
-                                block.object3d.rotateZ(R * 0.2)
+                                block.object3d.rotateZ(R * unitAngle)
                             }
                         }
                     });
@@ -164,7 +165,7 @@ export function blockControl(currentPtr: Array<Level>): void {
                     rotateBlockPositions(block, 2, -1, (err: boolean) => {
                         if (!err) {
                             intervalEvent = () => {
-                                block.object3d.rotateZ(-R * 0.2);
+                                block.object3d.rotateZ(-R * unitAngle);
                             }
                         }
                     });
@@ -174,11 +175,11 @@ export function blockControl(currentPtr: Array<Level>): void {
                     block.state.allowRotate = true;
                 }, 200);
                 if (intervalEvent) {
+                    let tempObject = new THREE.Object3D();
                     s = setInterval(() => {
                         intervalEvent();
                         count++;
                         // copy the object to a new one
-                        let tempObject = new THREE.Object3D();
                         tempObject.position.setX(block.object3d.position.x);
                         tempObject.position.setY(block.object3d.position.y);
                         tempObject.position.setZ(block.object3d.position.z);
@@ -189,7 +190,8 @@ export function blockControl(currentPtr: Array<Level>): void {
                         tempObject.add(objectCloned);
                         block.object3d.remove(...block.object3d.children);
                         block.object3d.copy(tempObject);
-                        if (count === 5) {
+                        tempObject.remove(...tempObject.children);
+                        if (count === parseInt((1 / unitAngle).toString())) {
                             clearInterval(s);
                             s = null;
                         }

@@ -34,7 +34,7 @@
         "levelInfo": {
             "initSpeed": 0.04,
             "speedRate": 1.00125,
-            "targetScore": 500
+            "targetScore": 10
         },
         "blocks": [0, 1, 2, 3, 4],
         "barriers": []

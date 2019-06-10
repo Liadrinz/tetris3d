@@ -44,6 +44,8 @@ var init = function () {
     }, false);
 
     document.getElementById('score-box').style.display = '';
+    // renderer.render(scene, camera);
+    buffer.timeRender();
 }
 
 init()

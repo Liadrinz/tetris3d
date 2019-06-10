@@ -8,6 +8,11 @@ import { currentPtr, guideSteps } from './logic';
 import { hex } from './Physical';
 
 const R = Math.PI / 2;
+const leftMaterial = new THREE.MeshPhongMaterial({ color: 0xa0a0a0, opacity: 0.0, transparent: true });
+const rightMaterial = new THREE.MeshPhongMaterial({ color: 0xa0a0a0, opacity: 0.0, transparent: true });
+const frontMaterial = new THREE.MeshPhongMaterial({ color: 0xa0a0a0, opacity: 0.0, transparent: true });
+const backMaterial = new THREE.MeshPhongMaterial({ color: 0xa0a0a0, opacity: 0.0, transparent: true });
+
 
 export interface BoardState {
     fadeStop: boolean,
@@ -21,10 +26,6 @@ export default class Board {
         fadeStop: false,
         showStop: false
     };
-    leftMaterial: THREE.MeshPhongMaterial;
-    rightMaterial: THREE.MeshPhongMaterial;
-    frontMaterial: THREE.MeshPhongMaterial;
-    backMaterial: THREE.MeshPhongMaterial;
     score: number = 0;
     history: History;
     barriers: Array<Barrier>;
@@ -37,36 +38,32 @@ export default class Board {
 
     constructor(history: History, barriers: Array<Barrier> = null) {
         // build walls
-        this.leftMaterial = new THREE.MeshPhongMaterial({ color: 0xa0a0a0, opacity: 0.0, transparent: true });
         let leftWall = new THREE.Mesh(
             new THREE.PlaneBufferGeometry(this.size.z, this.size.y),
-            this.leftMaterial
+        leftMaterial
         );
         leftWall.translateX(-0.02);
         leftWall.translateY(parseInt((BOARD_SIZE.y / 2).toString()));
         leftWall.translateZ(parseInt((BOARD_SIZE.z / 2).toString()));
         leftWall.rotateY(R);
-        this.rightMaterial = new THREE.MeshPhongMaterial({ color: 0xa0a0a0, opacity: 0.0, transparent: true });
         let rightWall = new THREE.Mesh(
             new THREE.PlaneBufferGeometry(this.size.z, this.size.y),
-            this.rightMaterial
+        rightMaterial
         );
         rightWall.translateX(BOARD_SIZE.x + 0.02);
         rightWall.translateY(parseInt((BOARD_SIZE.y / 2).toString()));
         rightWall.translateZ(parseInt((BOARD_SIZE.z / 2).toString()));
         rightWall.rotateY(R);
-        this.frontMaterial = new THREE.MeshPhongMaterial({ color: 0xa0a0a0, opacity: 0.0, transparent: true });
         let frontWall = new THREE.Mesh(
             new THREE.PlaneBufferGeometry(this.size.x, this.size.y),
-            this.frontMaterial
+        frontMaterial
         );
         frontWall.translateX(parseInt((BOARD_SIZE.x / 2).toString()));
         frontWall.translateY(parseInt((BOARD_SIZE.y / 2).toString()));
         frontWall.translateZ(-0.02)
-        this.backMaterial = new THREE.MeshPhongMaterial({ color: 0xa0a0a0, opacity: 0.0, transparent: true });
         let backWall = new THREE.Mesh(
             new THREE.PlaneBufferGeometry(this.size.x, this.size.y),
-            this.backMaterial
+        backMaterial
         );
         backWall.translateX(parseInt((BOARD_SIZE.x / 2).toString()));
         backWall.translateY(parseInt((BOARD_SIZE.y / 2).toString()));
@@ -124,7 +121,7 @@ export default class Board {
 
     setBarriers(barriers: Array<Barrier>): void {
         for (let barObj of this.barrierObjects) {
-            scene.remove(barObj);
+            buffer.remove(scene, barObj);
         }
         this.barriers = barriers;
         this.barrierMatrix = []
@@ -158,32 +155,32 @@ export default class Board {
         this.state.showStop = false;
         this.state.fadeStop = true;
         if (direction === 'left') {
-            if (this.leftMaterial.opacity >= MAX_OPACITY || this.state.showStop) return;
+            if (leftMaterial.opacity >= MAX_OPACITY || this.state.showStop) return;
             let s = setInterval(() => {
-                if (this.leftMaterial.opacity >= MAX_OPACITY || this.state.showStop)
+                if (leftMaterial.opacity >= MAX_OPACITY || this.state.showStop)
                     clearInterval(s);
-                this.leftMaterial.opacity += 0.1
+                leftMaterial.opacity += 0.1
             }, 20);
         } else if (direction === 'right') {
-            if (this.rightMaterial.opacity >= MAX_OPACITY || this.state.showStop) return;
+            if (rightMaterial.opacity >= MAX_OPACITY || this.state.showStop) return;
             let s = setInterval(() => {
-                if (this.rightMaterial.opacity >= MAX_OPACITY || this.state.showStop)
+                if (rightMaterial.opacity >= MAX_OPACITY || this.state.showStop)
                     clearInterval(s);
-                this.rightMaterial.opacity += 0.1
+                rightMaterial.opacity += 0.1
             }, 20);
         } else if (direction === 'up') {
-            if (this.frontMaterial.opacity >= MAX_OPACITY || this.state.showStop) return;
+            if (frontMaterial.opacity >= MAX_OPACITY || this.state.showStop) return;
             let s = setInterval(() => {
-                if (this.frontMaterial.opacity >= MAX_OPACITY || this.state.showStop)
+                if (frontMaterial.opacity >= MAX_OPACITY || this.state.showStop)
                     clearInterval(s);
-                this.frontMaterial.opacity += 0.1
+                frontMaterial.opacity += 0.1
             }, 20);
         } else if (direction === 'down') {
-            if (this.backMaterial.opacity >= MAX_OPACITY || this.state.showStop) return;
+            if (backMaterial.opacity >= MAX_OPACITY || this.state.showStop) return;
             let s = setInterval(() => {
-                if (this.backMaterial.opacity >= MAX_OPACITY || this.state.showStop)
+                if (backMaterial.opacity >= MAX_OPACITY || this.state.showStop)
                     clearInterval(s);
-                this.backMaterial.opacity += 0.1
+                backMaterial.opacity += 0.1
             }, 20);
         }
     }
@@ -193,38 +190,38 @@ export default class Board {
         this.state.fadeStop = false;
         this.state.showStop = true;
         if (direction === 'left') {
-            if (this.leftMaterial.opacity <= 0 || this.state.fadeStop) return;
+            if (leftMaterial.opacity <= 0 || this.state.fadeStop) return;
             let s = setInterval(() => {
-                if (this.leftMaterial.opacity <= 0 || this.state.fadeStop)
+                if (leftMaterial.opacity <= 0 || this.state.fadeStop)
                     clearInterval(s);
-                this.leftMaterial.opacity -= 0.1
+                leftMaterial.opacity -= 0.1
             }, 20);
         } else if (direction === 'right') {
-            if (this.rightMaterial.opacity <= 0 || this.state.fadeStop) return;
+            if (rightMaterial.opacity <= 0 || this.state.fadeStop) return;
             let s = setInterval(() => {
-                if (this.rightMaterial.opacity <= 0 || this.state.fadeStop)
+                if (rightMaterial.opacity <= 0 || this.state.fadeStop)
                     clearInterval(s);
-                this.rightMaterial.opacity -= 0.1
+                rightMaterial.opacity -= 0.1
             }, 20);
         } else if (direction === 'up') {
-            if (this.frontMaterial.opacity <= 0 || this.state.fadeStop) return;
+            if (frontMaterial.opacity <= 0 || this.state.fadeStop) return;
             let s = setInterval(() => {
-                if (this.frontMaterial.opacity <= 0 || this.state.fadeStop)
+                if (frontMaterial.opacity <= 0 || this.state.fadeStop)
                     clearInterval(s);
-                this.frontMaterial.opacity -= 0.1
+                frontMaterial.opacity -= 0.1
             }, 20);
         } else if (direction === 'down') {
-            if (this.backMaterial.opacity <= 0 || this.state.fadeStop) return;
+            if (backMaterial.opacity <= 0 || this.state.fadeStop) return;
             let s = setInterval(() => {
-                if (this.backMaterial.opacity <= 0 || this.state.fadeStop)
+                if (backMaterial.opacity <= 0 || this.state.fadeStop)
                     clearInterval(s);
-                this.backMaterial.opacity -= 0.1
+                backMaterial.opacity -= 0.1
             }, 20);
         }
     }
 
     reset(history: History): void {
-        scene.remove(this.object3d);
+        buffer.remove(scene, this.object3d);
         this._init(history);
     }
 

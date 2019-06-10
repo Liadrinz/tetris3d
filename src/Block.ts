@@ -171,5 +171,7 @@ export default class Block {
                 this.state.speed = this.state.originalSpeed;
             }
         }
+        // renderer.render(scene, camera);
+        buffer.timeRender();
     }
 }

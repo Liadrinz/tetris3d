@@ -35,8 +35,11 @@ blockControl(currentPtr);
 export default function loop(): void {
     // animation
     requestAnimationFrame(loop);
-    renderer.render(scene, camera);
-    buffer.render();
+
+    if (buffer.renderRequired) {
+        renderer.render(scene, camera);
+    }
+    buffer.commit();
 
     /** logic start */
 
@@ -59,9 +62,9 @@ export default function loop(): void {
     if (currentPtr[0].board.dieCheck()) {
         currentPtr[0].current[0].state.paused = true;
         showMessage('<p style="text-align: center;">白给了<br><span style="font-size: 25px;">[按空格键重来]</span></p>', '#fff', () => {
-            document.onkeypress = (e) => {
+            document.onkeyup = (e) => {
                 if (e.keyCode === 32) {
-                    document.onkeypress = undefined;
+                    document.onkeyup = undefined;
                     currentPtr[0].board.restart();
                     hideMessage(() => { });
                     reset = true;
@@ -75,16 +78,14 @@ export default function loop(): void {
     // level up
     if (currentPtr[0].board.score >= currentPtr[0].levelInfo.targetScore) {
         currentPtr[0].current[0].state.paused = true;
-        showMessage('<p style="text-align: center;">牛逼嗷！<br><span style="font-size: 25px;">[按空格键下一关]</span></p>', '#fff', () => {
-            document.onkeypress = (e) => {
+        showMessage('<p style="text-align: center;">牛逼嗷！<br><span style="font-size: 25px;">[按任意键下一关]</span></p>', '#fff', () => {
+            document.onkeyup = (e) => {
                 if (e.keyCode === 32) {
-                    document.onkeypress = undefined;
+                    document.onkeyup = undefined;
                     currentPtr[0].board.score = 0;
                     clearScore();
-                    scene.remove(currentPtr[0].block.object3d);
-                    scene.remove(currentPtr[0].board.object3d);
-                    scene.remove(currentPtr[0].history.object3d);
-                    scene.remove(...currentPtr[0].board.barrierObjects);
+                    buffer.remove(scene, currentPtr[0].block.object3d, currentPtr[0].board.object3d, currentPtr[0].history.object3d);
+                    buffer.remove(scene, ...currentPtr[0].board.barrierObjects);
                     currentPtr[0].block = null;
                     currentPtr[0] = allLevels[++currentLvN];
                     blockControl(currentPtr);
@@ -105,7 +106,7 @@ export default function loop(): void {
     if (reset) {
         currentPtr[0].board.score = 0;
         clearScore();
-        scene.remove(currentPtr[0].block.object3d);
+        buffer.remove(scene, currentPtr[0].block.object3d)
         currentPtr[0].block = null;
         reset = false;
     }
@@ -135,9 +136,9 @@ function back(): void {
     if (!removed) {
         try {
             for (let level of allLevels) {
-                scene.remove(level.board.object3d, ...level.board.barrierObjects, level.history.object3d);
+                buffer.remove(scene, level.board.object3d, ...level.board.barrierObjects, level.history.object3d);
                 if (level.current[0]) {
-                    scene.remove(level.current[0].object3d);
+                    buffer.remove(scene, level.current[0].object3d);
                 }
             }
         } catch (e) {

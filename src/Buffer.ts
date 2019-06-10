@@ -1,4 +1,5 @@
 import { Object3D } from "three";
+import { renderer, scene, camera } from "./Root";
 
 interface RenderPair {
     parent: Object3D,
@@ -6,12 +7,26 @@ interface RenderPair {
 }
 
 export default class Buffer {
-    delaySpace: Array<RenderPair> = [];
-    immediateSpace: Array<RenderPair> = [];
+    timeout: number = null;
+    renderRequired: boolean = false;
+    delayAddSpace: Array<RenderPair> = [];
+    immediateAddSpace: Array<RenderPair> = [];
+    delayRemoveSpace: Array<RenderPair> = [];
+    immediateRemoveSpace: Array<RenderPair> = [];
+
+    timeRender() {
+        this.renderRequired = true;
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+        }
+        this.timeout = setTimeout(() => {
+            this.renderRequired = false;
+        }, 300);
+    }
 
     add(parent: Object3D, ...target: Array<Object3D>): void {
         for (let t of target) {
-            this.immediateSpace.push({
+            this.immediateAddSpace.push({
                 parent: parent,
                 target: t
             });
@@ -20,23 +35,52 @@ export default class Buffer {
 
     addDelay(parent: Object3D, ...target: Array<Object3D>): void {
         for (let t of target) {
-            this.delaySpace.push({
+            this.delayAddSpace.push({
                 parent: parent,
                 target: t
             });
         }
     }
 
-    render(): void {
-        while (this.immediateSpace.length > 0) {
-            let pair = this.immediateSpace.pop();
+    remove(parent: Object3D, ...target: Array<Object3D>) {
+        for (let t of target) {
+            this.immediateRemoveSpace.push({
+                parent: parent,
+                target: t
+            });
+        }
+    }
+
+    removeDelay(parent: Object3D, ...target: Array<Object3D>) {
+        for (let t of target) {
+            this.delayRemoveSpace.push({
+                parent: parent,
+                target: t
+            });
+        }
+    }
+
+    commit(): void {
+        while (this.immediateAddSpace.length > 0) {
+            let pair = this.immediateAddSpace.pop();
             pair.parent.add(pair.target);
         }
-        if (this.delaySpace.length > 0) {
+        while (this.immediateRemoveSpace.length > 0) {
+            let pair = this.immediateRemoveSpace.pop();
+            pair.parent.remove(pair.target);
+        }
+        if (this.delayAddSpace.length > 0) {
             setTimeout(() => {
-                let pair = this.delaySpace.pop();
+                let pair = this.delayAddSpace.pop();
                 pair.parent.add(pair.target);
             }, 0);
         }
+        if (this.delayRemoveSpace.length > 0) {
+            setTimeout(() => {
+                let pair = this.delayRemoveSpace.pop();
+                pair.parent.remove(pair.target);
+            }, 0);
+        }
+        this.timeRender();
     }
 }

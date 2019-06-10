@@ -41,13 +41,14 @@ export default class Barrier {
         }
 
         this.object3d = new THREE.Group();
-        
+        let boxGeometry = new THREE.BoxGeometry(1, 1, 1);
+        let boxMaterial = new THREE.MeshPhongMaterial({ color: 0xa0a0ff });
         for (let i = 0; i < this.size.x; i++) {
             for (let j = 0; j < this.size.z; j++) {
                 if (this.matrix[i][j] == 1) {
                     let piece = new THREE.Mesh(
-                        new THREE.BoxGeometry(1, 1, 1),
-                        new THREE.MeshPhongMaterial({ color: 0xa0a0ff })
+                        boxGeometry,
+                        boxMaterial
                     );
                     piece.receiveShadow = true;
                     piece.castShadow = true;

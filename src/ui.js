@@ -164,6 +164,8 @@ export function showTitle(callback = (title) => {}) {
         TETRIS[i].object3d.translateY(-9);
         buffer.addDelay(title, TETRIS[i].object3d);
     }
+    // renderer.render(scene, camera);
+    buffer.timeRender();
     title.translateZ(-2);
     title.rotateY(Math.PI / 4);
     title.translateX(-12);
